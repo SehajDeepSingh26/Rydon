@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 const bcrypt = require("bcrypt")
-const JsonWebTokenError = require("jsonwebtoken")
+const jwt = require("jsonwebtoken")
 
 const userSchema = new mongoose.Schema({
     fullName: {
@@ -30,14 +30,13 @@ const userSchema = new mongoose.Schema({
     },
 })
 
-userSchema.methods.generateAuthToken = () => {
-    const token = JsonWebTokenError.sign({ id: this._id }, process.env.JWT_SECRET, {
-        // expiresIn: "1h"
-    });
+userSchema.methods.generateAuthToken = function(){
+    const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {expiresIn: '24h'});
     return token;
 }
 
-userSchema.methods.compare = async (password) => {
+userSchema.methods.comparePassword = async function (password) {
+    // console.log(this)
     return await bcrypt.compare(password, this.password)
 }
 
