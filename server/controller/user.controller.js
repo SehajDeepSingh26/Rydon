@@ -74,19 +74,18 @@ module.exports.registerUser = async (req, res, next) => {
 
         //check most recent otp
         const response = await OtpModel.find({email}).sort({createdAt: -1}).limit(1);
-        console.log(response)
+
         if(response.length == 0)
-            return res.status(500).json({
+            return res.status(404).json({
                 success: false,
                 message: "Enter OTP."
             })
-        if(response[0].otp !== otp)
+        else if(response[0].otp !== otp)
             return res.status(403).json({
                 success: false,
                 message: "OTP is invalid."
             })
         
-        console.log(response.otp)
         const hashedPass = await userModel.hashPassword(password);
 
         const user = await userService.createUser({ fullName, email, password: hashedPass });
