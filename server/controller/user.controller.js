@@ -2,7 +2,7 @@ const userModel = require("../models/user.model");
 const {validationResult} = require("express-validator");
 const userService = require("../services/user.services");
 const bcrypt = require("bcrypt");
-const blacklistTokenModels = require("../models/blacklistToken.models");
+const { blackListModel } = require("../models/blacklistToken.models");
 
 // Register a new user
 module.exports.registerUser = async(req, res, next) => {
@@ -15,7 +15,7 @@ module.exports.registerUser = async(req, res, next) => {
 
         const IsUser = await userModel.findOne({email});
         if(IsUser){
-            return res.status(500).json({
+            return res.status(409).json({
                 success: false,
                 message: "User already present"
             })
@@ -24,9 +24,9 @@ module.exports.registerUser = async(req, res, next) => {
 
         const user = await userService.createUser({fullName, email, password: hashedPass});
 
-        const token = user.generateAuthToken();
+        // const token = user.generateAuthToken();
         res.status(201).json({
-            token,
+            // token,
             user,
             success: true,
             message: "User registered successfully"
@@ -75,7 +75,7 @@ module.exports.loginUser = async(req, res, next) => {
         const token = user.generateAuthToken();
         res.cookie('token', token)
         
-        res.status(201).json({
+        res.status(200).json({
             success: true,
             message: "User loggedIn",
             token,
@@ -115,7 +115,7 @@ module.exports.logoutUser = async(req, res, next) => {
     //^ add in balckList token
     const token = req.cookies.token || req.headers.authorization.split(' ')[1];
 
-    await blacklistTokenModels.create({token});
+    await blackListModel.create({token})
 
     res.status(200).json({
         success: true,
