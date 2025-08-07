@@ -76,7 +76,7 @@ module.exports.registerCaptain = async (req, res, next) => {
             success: false,
             message: "No OTP found"
         })
-    else if(response[0].otp !== otp)
+    else if(response[0].otp != otp)
         return res.status(403).json({
             success: false,
             message: "Invalid OTP"

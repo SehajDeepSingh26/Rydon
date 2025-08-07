@@ -6,7 +6,7 @@ const { blackListModel } = require("../models/blacklistToken.models");
 const optGenerator = require("otp-generator");
 const { OtpModel } = require("../models/otp.model");
 
-module.exports.sendOtp = async (req, res, next) => {
+module.exports.sendOtp = async (req, res) => {
     try {
         const { email } = req.body;
         if (!email)
@@ -56,7 +56,7 @@ module.exports.sendOtp = async (req, res, next) => {
 }
 
 // Register a new user
-module.exports.registerUser = async (req, res, next) => {
+module.exports.registerUser = async (req, res) => {
     try {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
@@ -78,9 +78,9 @@ module.exports.registerUser = async (req, res, next) => {
         if(response.length == 0)
             return res.status(404).json({
                 success: false,
-                message: "Enter OTP."
+                message: "No OTP Found"
             })
-        else if(response[0].otp !== otp)
+        else if(response[0].otp != otp)
             return res.status(403).json({
                 success: false,
                 message: "OTP is invalid."
