@@ -1,8 +1,8 @@
-import { useContext, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import UserDataContext from '../context/DataContext'
+import { DataContext } from '../context/DataContext'
 
 const CaptainSignup = () => {
 
@@ -21,7 +21,18 @@ const CaptainSignup = () => {
     const [otp, setOtp] = useState();
     const [otpField, setOtpField] = useState(false)
     const [error, setError] = useState("")
-    const { setCaptain } = useContext(UserDataContext);
+    const { setCaptain } = useContext(DataContext);
+
+    const id = localStorage.getItem('id')
+    
+    useEffect(() => {
+        if(id === 'users')
+            navigate('/home')
+        if(id === 'captain')
+            navigate('/captain-home')
+
+    }, [id, navigate])
+    
 
     const submitHandler = async (e) => {
         e.preventDefault()
@@ -59,11 +70,14 @@ const CaptainSignup = () => {
         
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/register`, captainData)
     
-        if (response.success === true) {
+        if (response.data.success === true) {
             const data = response.data
-            setCaptain(data.captain)
-            // localStorage.setItem('token', data.token)
+            setCaptain(data.user)
             navigate('/captain-login')
+        }
+        else {
+            setError(response.data.message)
+            return;
         }
     }
     

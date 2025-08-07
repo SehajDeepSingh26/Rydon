@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 
@@ -7,6 +7,15 @@ const UserLogin = () => {
     const [password, setPassword] = useState("")
 
     const navigate = useNavigate();
+    const id = localStorage.getItem('id')
+    
+    useEffect(() => {
+        if(id === 'users')
+            navigate('/home')
+        if(id === 'captain')
+            navigate('/captain-home')
+
+    }, [id, navigate])
 
     const submitHandler = async(e) => {
         e.preventDefault()
@@ -20,6 +29,7 @@ const UserLogin = () => {
             const data = response.data;
             localStorage.setItem('token', data.token)
             localStorage.setItem('id', "users")
+            localStorage.setItem('setupTime', Date.now())
             navigate('/home')
         }
         

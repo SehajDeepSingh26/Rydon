@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { DataContext } from '../context/DataContext'
 
 const UserSignup = () => {
     const [email, setEmail] = useState('')
@@ -12,7 +13,17 @@ const UserSignup = () => {
     const [error, setError] = useState("")
 
     const navigate = useNavigate()
-    const [user, setUser] = useState({})
+    const {setUser} = useContext(DataContext)
+
+    const id = localStorage.getItem('id')
+    
+    useEffect(() => {
+        if(id === 'users')
+            navigate('/home')
+        if(id === 'captain')
+            navigate('/captain-home')
+
+    }, [id, navigate])
 
 
     const submitHandler = async (e) => {
@@ -33,7 +44,6 @@ const UserSignup = () => {
                 otp: otp
             }
             setUser(newUser)
-            console.log(user)
 
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser)
 

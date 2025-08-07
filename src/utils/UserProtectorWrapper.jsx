@@ -6,10 +6,13 @@ const UserProtectorWrapper = ({
 }) => {
     const navigate = useNavigate();
     const token = localStorage.getItem('token')
+    const id = localStorage.getItem('id')
     
     useEffect(() => {
         if (!token)
             navigate('/login')
+        if(id !== "users")
+            navigate('/captain-home');
     }, [token, navigate])
 
     return (

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -9,6 +9,15 @@ const Captainlogin = () => {
     const [password, setPassword] = useState('')
 
     const navigate = useNavigate()
+    const id = localStorage.getItem('id')
+
+    useEffect(() => {
+        if(id === 'users')
+            navigate('/home')
+        if(id === 'captain')
+            navigate('/captain-home')
+
+    }, [id, navigate])
 
 
     const submitHandler = async (e) => {
@@ -24,6 +33,7 @@ const Captainlogin = () => {
             const data = response.data
             localStorage.setItem('token', data.token)
             localStorage.setItem('id', "captain")
+            localStorage.setItem('setupTime', Date.now())
             navigate('/captain-home')
         }
 

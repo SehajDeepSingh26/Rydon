@@ -11,6 +11,9 @@ const Logout = () => {
         logout();
     })
     const logout = async () => {
+        if(!id || !token)
+            return;
+        
         const res = await apiConnector(
             'GET', 
             `${import.meta.env.VITE_BASE_URL}/${id}/logout`,
@@ -35,7 +38,7 @@ const Logout = () => {
     }
     return (
         <div>
-
+            Thanks for reaching Here, but Lol, you see nothing
         </div>
     )
 }
