@@ -7,10 +7,17 @@ import ConfirmRide from '../components/ConfirmRide';
 import VehiclePanel from '../components/VehiclePanel';
 import LookingForDriver from '../components/LookingForDriver';
 import WaitingForDriver from '../components/WaitingForDriver';
+import { useContext } from 'react';
+import { RideContext } from '../context/RideContext';
 
 const Home = () => {
-    const [pickup, setPickup] = useState("");
-    const [destination, setDestination] = useState("");
+    const {
+        setInputField, 
+        setPickOrDesti, 
+        pickup, setPickup, 
+        destination, setDestination
+    } = useContext(RideContext)
+
     const [panelOpen, setPanelOpen] = useState(false);
     const panelRef = useRef(null)
     const panelCloseRef = useRef(null)
@@ -27,6 +34,24 @@ const Home = () => {
     
     const submitHandler = (e) => {
         e.preventDefault();
+    }
+
+    const managePickup = (e) => {
+        setPickup(e.target.value)
+        setInputField(e.target.value);
+        setPickOrDesti(1);
+    }
+    const manageDestination = (e) => {
+        setDestination(e.target.value)
+        setInputField(e.target.value);
+        setPickOrDesti(2)
+    }
+
+    const handleFindTrip = () => {
+        if(pickup && destination){
+            setVehiclePanel(true)
+            setPanelOpen(false)
+        }
     }
 
     useGSAP(() => {
@@ -124,7 +149,9 @@ const Home = () => {
                         <input
                             onClick={() => {setPanelOpen(true)}}
                             value={pickup}
-                            onChange={(e) => {setPickup(e.target.value)}}
+                            onChange={(e) => {
+                                managePickup(e)
+                            }}
                             className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full mt-5'
                             type="text"
                             placeholder='Add a pick-up location'
@@ -135,15 +162,21 @@ const Home = () => {
                             }}
                             value={destination}
                             onChange={(e) => {
-                                setDestination(e.target.value)
+                                manageDestination(e)
                             }}
                             className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full  mt-3'
                             type="text"
                             placeholder='Enter your destination' />
                     </form>
+                    <button 
+                      className="px-12 py-2 text-lg rounded-lg w-full mt-5 bg-black text-white font-medium "
+                      onClick={handleFindTrip}
+                    > 
+                        Find Trip
+                    </button>
                 </div>
                 <div ref={panelRef} className='bg-white h-0'>
-                    <LocationSearchPanel setPanelOpen={setPanelOpen} setVehiclePanel={setVehiclePanel} />
+                    <LocationSearchPanel />
                 </div>
             </div>
 

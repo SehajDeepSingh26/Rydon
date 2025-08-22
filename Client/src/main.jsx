@@ -4,11 +4,14 @@ import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
 import UserDataContext from './context/DataContext.jsx'
+import UserRideContext from './context/RideContext.jsx'
 
 createRoot(document.getElementById('root')).render(
     <UserDataContext>
-        <BrowserRouter>
-            <App />
-        </BrowserRouter>
+        <UserRideContext>
+            <BrowserRouter>
+                <App />
+            </BrowserRouter>
+        </UserRideContext>
     </UserDataContext>
 )

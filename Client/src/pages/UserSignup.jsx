@@ -72,7 +72,7 @@ const UserSignup = () => {
         try {
             setOtp("")
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/send-otp`, { email: email });
-            console.log(response)
+           
             if (response.data?.success == true) {
                 setOtpField(true)
             }

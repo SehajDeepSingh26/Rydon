@@ -1,0 +1,25 @@
+const express = require("express");
+const router = express.Router();
+const { body } = require("express-validator");
+const { authUser } = require("../middleware/auth.middleware");
+const { creatRide, getFare } = require("../controller/ride.controller");
+
+router.post(
+    '/create',
+    body('pickup')
+        .isString().withMessage('Pickup location must be a string')
+        .isLength({ min: 3 }).withMessage('Pickup location must be at least 3 characters'),
+    body('destination')
+        .isString().withMessage('Destination must be a string')
+        .isLength({ min: 3 }).withMessage('Destination must be at least 3 characters'),
+    body('vehicleType')
+        .isString()
+        .isIn(['auto', 'car', 'moto'])
+        .withMessage('Vehicle type must be one of: auto, car, moto'),
+    authUser,
+    creatRide
+);
+
+router.get('/get-fare', authUser, getFare)
+
+module.exports = router;

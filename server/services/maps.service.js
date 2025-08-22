@@ -39,7 +39,7 @@ module.exports.getDistanceTime = async (origin, destination) => {
             return response.data.rows[0].elements[0]
         }
         else
-            throw new Error("Unabl;e to fetch distance-time data")
+            throw new Error("Unable to fetch distance-time data")
     }
     catch (error) {
         console.log(error, "Error while fetching distanceTime in Service")
@@ -53,7 +53,6 @@ module.exports.getSuggestions = async (input) => {
 
     try {
         const response = await axios.get(url);
-        console.log(response)
 
         if(response.data.status === 'OK'){
             const suggestions = response.data.predictions;
