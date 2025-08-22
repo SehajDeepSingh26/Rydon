@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import { RideContext } from '../context/RideContext';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const ConfirmRide = (props) => {
     const {
@@ -32,6 +33,7 @@ const ConfirmRide = (props) => {
             props.setConfirmRidePanel(false);
 
         } catch (error) {
+            toast.error(error)
             console.log(error);
         } finally {
             setIsLoading(false);

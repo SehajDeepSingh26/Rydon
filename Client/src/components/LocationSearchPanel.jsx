@@ -4,6 +4,7 @@ import axios from 'axios'
 import { useEffect } from 'react'
 import { useContext } from 'react'
 import { RideContext } from '../context/RideContext'
+import toast from 'react-hot-toast'
 
 const LocationSearchPanel = () => {
 
@@ -35,6 +36,7 @@ const LocationSearchPanel = () => {
             })
         }
         catch (error) {
+            toast.error(error)
             console.log(error)
         }
     }

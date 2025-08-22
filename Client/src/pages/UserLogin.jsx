@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import toast from 'react-hot-toast'
 
 const UserLogin = () => {
     const [email, setEmail] = useState("")
@@ -24,13 +25,21 @@ const UserLogin = () => {
             password: password
         }
 
-        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, loginUser)
-        if(response.data.success === true){
-            const data = response.data;
-            localStorage.setItem('token', data.token)
-            localStorage.setItem('id', "users")
-            localStorage.setItem('setupTime', Date.now())
-            navigate('/home')
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, loginUser)
+            if(response.data.success === true){
+                toast.success("Login successful!")
+                const data = response.data;
+                localStorage.setItem('token', data.token)
+                localStorage.setItem('id', "users")
+                localStorage.setItem('setupTime', Date.now())
+                navigate('/home')
+            } else {
+                toast.error(response.data.message || "Login failed")
+            }
+        } catch (error) {
+            toast.error("Something went wrong!")
+            console.log(error)
         }
         
         setEmail("")

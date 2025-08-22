@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { DataContext } from '../context/DataContext'
+import toast from 'react-hot-toast'
 
 const CaptainSignup = () => {
 
@@ -69,13 +70,15 @@ const CaptainSignup = () => {
 
         
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/register`, captainData)
-    
+
         if (response.data.success === true) {
+            toast.success("Captain account created! Please login.")
             const data = response.data
             setCaptain(data.user)
             navigate('/captain-login')
         }
         else {
+            toast.error(response.data.message || "Registration failed")
             setError(response.data.message)
             return;
         }

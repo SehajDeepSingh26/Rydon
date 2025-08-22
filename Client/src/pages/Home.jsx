@@ -9,12 +9,13 @@ import LookingForDriver from '../components/LookingForDriver';
 import WaitingForDriver from '../components/WaitingForDriver';
 import { useContext } from 'react';
 import { RideContext } from '../context/RideContext';
+import toast from 'react-hot-toast';
 
 const Home = () => {
     const {
-        setInputField, 
-        setPickOrDesti, 
-        pickup, setPickup, 
+        setInputField,
+        setPickOrDesti,
+        pickup, setPickup,
         destination, setDestination
     } = useContext(RideContext)
 
@@ -26,12 +27,12 @@ const Home = () => {
     const confirmRidePanelRef = useRef(null)
     const vehicleFoundRef = useRef(null)
     const waitingForDriverRef = useRef(null)
-    
+
     const [vehiclePanel, setVehiclePanel] = useState(false)
     const [confirmRidePanel, setConfirmRidePanel] = useState(false)
     const [vehicleFound, setVehicleFound] = useState(false)
     const [waitingForDriver, setWaitingForDriver] = useState(false)
-    
+
     const submitHandler = (e) => {
         e.preventDefault();
     }
@@ -48,14 +49,16 @@ const Home = () => {
     }
 
     const handleFindTrip = () => {
-        if(pickup && destination){
+        if (pickup && destination) {
             setVehiclePanel(true)
             setPanelOpen(false)
+        } else {
+            toast.error("Please enter both pickup and destination!")
         }
     }
 
     useGSAP(() => {
-        if(panelOpen){
+        if (panelOpen) {
             gsap.to(panelRef.current, {
                 height: '70%',
                 padding: 24,
@@ -65,7 +68,7 @@ const Home = () => {
                 opacity: 1
             })
         }
-        else{
+        else {
             gsap.to(panelRef.current, {
                 height: '0%',
                 padding: 0,
@@ -113,7 +116,7 @@ const Home = () => {
         }
     }, [vehicleFound])
 
-     useGSAP(function () {
+    useGSAP(function () {
         if (waitingForDriver) {
             gsap.to(waitingForDriverRef.current, {
                 transform: 'translateY(0)'
@@ -128,7 +131,7 @@ const Home = () => {
 
     return (
         <div className='h-screen relative overflow-hidden'>
-            <img className='w-16 absolute left-5 top-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
+            <img className='w-16 absolute left-5 top-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt=""/>
             <div className='h-screen w-screen'>
                 {/* image for temporary use  */}
                 <img className='h-full w-full object-cover' src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" />
@@ -147,7 +150,7 @@ const Home = () => {
                     }}>
                         <div className="line absolute h-16 w-1 top-[45%] left-10 bg-gray-700 rounded-full"></div>
                         <input
-                            onClick={() => {setPanelOpen(true)}}
+                            onClick={() => { setPanelOpen(true) }}
                             value={pickup}
                             onChange={(e) => {
                                 managePickup(e)
@@ -168,10 +171,10 @@ const Home = () => {
                             type="text"
                             placeholder='Enter your destination' />
                     </form>
-                    <button 
-                      className="px-12 py-2 text-lg rounded-lg w-full mt-5 bg-black text-white font-medium "
-                      onClick={handleFindTrip}
-                    > 
+                    <button
+                        className="px-12 py-2 text-lg rounded-lg w-full mt-5 bg-black text-white font-medium "
+                        onClick={handleFindTrip}
+                    >
                         Find Trip
                     </button>
                 </div>

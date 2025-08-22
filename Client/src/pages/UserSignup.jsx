@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { DataContext } from '../context/DataContext'
+import toast from 'react-hot-toast'
 
 const UserSignup = () => {
     const [email, setEmail] = useState('')
@@ -48,11 +49,13 @@ const UserSignup = () => {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, newUser)
 
             if (response.data.success === true) {
+                toast.success("Account created! Please login.")
                 const data = response.data
                 setUser(data.user)
                 navigate('/login')
             }
             else {
+                toast.error(response.data.message || "Registration failed")
                 setError(response.data.message)
                 return;
             }
@@ -64,6 +67,7 @@ const UserSignup = () => {
             setOtp('');
             setOtpField(false)
         } catch (error) {
+            toast.error("Something went wrong!")
             console.log(error)
         }
     }

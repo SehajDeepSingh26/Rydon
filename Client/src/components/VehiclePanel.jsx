@@ -3,6 +3,7 @@ import { useContext } from 'react'
 import { RideContext } from '../context/RideContext'
 import axios from 'axios';
 import { useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const VehiclePanel = (props) => {
     const { pickup, destination, setVehicleType, fares, setFares } = useContext(RideContext);
@@ -25,6 +26,7 @@ const VehiclePanel = (props) => {
             setFares(response.data.fares)
 
         } catch (error) {
+            toast.error(error?.response?.data?.error || error.message || "Failed to fetch fares")
             console.log(error)
             return;
         }
