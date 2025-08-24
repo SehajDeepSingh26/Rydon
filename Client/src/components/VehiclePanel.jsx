@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import toast from 'react-hot-toast';
 
 const VehiclePanel = (props) => {
-    const { pickup, destination, setVehicleType, fares, setFares } = useContext(RideContext);
+    const { pickup, destination, setVehicleType, fares, setFares, getFare } = useContext(RideContext);
     const token = localStorage.getItem('token')
 
 
@@ -33,9 +33,9 @@ const VehiclePanel = (props) => {
     }
 
     useEffect(() => {
-        if (pickup.length >= 3 && destination.length >= 3)
+        if (getFare)
             getFaresTravel();
-    }, [pickup, destination])
+    }, [pickup, destination, getFare])
 
     return (
         <div>

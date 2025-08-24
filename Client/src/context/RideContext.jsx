@@ -13,6 +13,7 @@ const UserRideContext = ({ children }) => {
     const [fares, setFares] = useState({})
 
     const [ isLoading, setIsLoading ] = useState(false);
+    const [ getFare, setGetFare ] = useState(false);
 
     const value = {
         inputField,
@@ -28,7 +29,9 @@ const UserRideContext = ({ children }) => {
         fares,
         setFares,
         isLoading,
-        setIsLoading
+        setIsLoading,
+        getFare,
+        setGetFare
     };
     return (
         <RideContext.Provider value={value}>

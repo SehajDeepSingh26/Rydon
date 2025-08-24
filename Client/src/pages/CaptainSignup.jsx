@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
@@ -22,7 +22,6 @@ const CaptainSignup = () => {
     const [otp, setOtp] = useState();
     const [otpField, setOtpField] = useState(false)
     const [error, setError] = useState("")
-    const { setCaptain } = useContext(DataContext);
 
     const id = localStorage.getItem('id')
     
@@ -73,8 +72,6 @@ const CaptainSignup = () => {
 
         if (response.data.success === true) {
             toast.success("Captain account created! Please login.")
-            const data = response.data
-            setCaptain(data.user)
             navigate('/captain-login')
         }
         else {

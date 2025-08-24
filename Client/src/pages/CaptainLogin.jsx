@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { DataContext } from '../context/DataContext'
 
 const Captainlogin = () => {
 
@@ -30,18 +31,20 @@ const Captainlogin = () => {
 
         try {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/login`, captain)
-            
+            let data;
             if (response.data.success === true) {
                 toast.success("Login successful!")
-                const data = response.data
+                data = response.data
+
                 localStorage.setItem('token', data.token)
                 localStorage.setItem('id', "captain")
-                localStorage.setItem('setupTime', Date.now())
-                navigate('/captain-home')
-            } else {
+                localStorage.setItem('setupTime', Date.now()) 
+            } 
+            else 
                 toast.error(response.data.message || "Login failed")
-            }
-        } catch (error) {
+
+        } 
+        catch (error) {
             toast.error("Something went wrong!")
             console.log(error)
         }

@@ -1,17 +1,47 @@
 import { useGSAP } from '@gsap/react'
-import React, { useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import ConfirmRidePopUp from '../components/ConfirmRidePopup'
 import RidePopUp from '../components/RidePopup'
 import CaptainDetails from '../components/CaptainDetails'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import toast from 'react-hot-toast'
+import axios from 'axios'
+import { DataContext } from '../context/DataContext'
 
 const CaptainHome = () => {
     const [ridePopupPanel, setRidePopupPanel] = useState(true)
     const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false)
+    const {setCaptain} = useContext(DataContext)
 
     const ridePopupPanelRef = useRef(null)
     const confirmRidePopupPanelRef = useRef(null)
+    const token = localStorage.getItem('token')
+
+    const navigate = useNavigate();
+
+    const fetchProfile = async() => {
+        try {
+            const profile = await axios.get(`${import.meta.env.VITE_BASE_URL}/captain/profile`, {
+                headers: { Authorization: `Bearer ${token}`}
+            })
+
+            if(profile.data.success){
+                setCaptain(profile.data.data)
+                navigate('/captain-home')
+            }
+            else 
+                toast.error(profile.data.message || "Failed to fetch profile data")
+        } 
+        catch (error) {
+            console.log(error)
+            toast.error("Something went wrong")
+        }
+    }
+
+    useEffect(() => {
+        fetchProfile();
+    }, [])
 
 
     useGSAP(function () {

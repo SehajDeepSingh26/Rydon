@@ -16,7 +16,8 @@ const Home = () => {
         setInputField,
         setPickOrDesti,
         pickup, setPickup,
-        destination, setDestination
+        destination, setDestination,
+        setGetFare
     } = useContext(RideContext)
 
     const [panelOpen, setPanelOpen] = useState(false);
@@ -38,11 +39,13 @@ const Home = () => {
     }
 
     const managePickup = (e) => {
+        setGetFare(false)
         setPickup(e.target.value)
         setInputField(e.target.value);
         setPickOrDesti(1);
     }
     const manageDestination = (e) => {
+        setGetFare(false)
         setDestination(e.target.value)
         setInputField(e.target.value);
         setPickOrDesti(2)
@@ -50,6 +53,8 @@ const Home = () => {
 
     const handleFindTrip = () => {
         if (pickup && destination) {
+            console.log(("hhahahahahahahah"))
+            setGetFare(true)
             setVehiclePanel(true)
             setPanelOpen(false)
         } else {
@@ -99,7 +104,7 @@ const Home = () => {
             })
         } else {
             gsap.to(confirmRidePanelRef.current, {
-                transform: 'translateY(100%)'
+                transform: 'translateY(140%)'
             })
         }
     }, [confirmRidePanel])

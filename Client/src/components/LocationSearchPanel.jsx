@@ -50,7 +50,6 @@ const LocationSearchPanel = () => {
 
     return (
         <div>
-            {/* this is just a sample data  */}
             {
                 locations.map(function (elem, idx) {
                     return <div key={idx}
