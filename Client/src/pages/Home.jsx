@@ -10,8 +10,15 @@ import WaitingForDriver from '../components/WaitingForDriver';
 import { useContext } from 'react';
 import { RideContext } from '../context/RideContext';
 import toast from 'react-hot-toast';
+import { SocketContext } from '../context/SocketContext';
+import { useEffect } from 'react';
+import { DataContext } from '../context/DataContext';
+import { useNavigate } from 'react-router-dom';
+import axios from "axios"
 
 const Home = () => {
+    const token = localStorage.getItem('token')
+
     const {
         setInputField,
         setPickOrDesti,
@@ -20,40 +27,69 @@ const Home = () => {
         setGetFare
     } = useContext(RideContext)
 
-    const [panelOpen, setPanelOpen] = useState(false);
+    const {user, setUser} = useContext(DataContext)
+
+    const {socket} = useContext(SocketContext)
+
     const panelRef = useRef(null)
     const panelCloseRef = useRef(null)
-
+    
     const vehiclePanelRef = useRef(null)
     const confirmRidePanelRef = useRef(null)
     const vehicleFoundRef = useRef(null)
     const waitingForDriverRef = useRef(null)
-
+    
+    const [panelOpen, setPanelOpen] = useState(false);
     const [vehiclePanel, setVehiclePanel] = useState(false)
     const [confirmRidePanel, setConfirmRidePanel] = useState(false)
     const [vehicleFound, setVehicleFound] = useState(false)
     const [waitingForDriver, setWaitingForDriver] = useState(false)
 
-    const submitHandler = (e) => {
-        e.preventDefault();
+    const navigate = useNavigate()
+
+    const fetchProfile = async() => {
+        try {
+            const profile = await axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
+                headers: { Authorization: `Bearer ${token}`}
+            })
+
+            if(profile.data.success)
+                setUser(profile.data.user)
+            else {
+                toast.error(profile.data.message || "Failed to fetch profile data")
+                navigate('/login')
+            }
+        } 
+        catch (error) {
+            console.log(error)
+            toast.error("Something went wrong")
+        }
     }
+
+    useEffect(() => {
+        fetchProfile();
+    }, [])
+
+    useEffect(() => {
+        console.log(user)
+        socket.emit('join', {userType: "user", userId: user._id})
+    }, [user])
 
     const managePickup = (e) => {
         setGetFare(false)
+        setPickOrDesti(1);
         setPickup(e.target.value)
         setInputField(e.target.value);
-        setPickOrDesti(1);
     }
     const manageDestination = (e) => {
         setGetFare(false)
+        setPickOrDesti(2)
         setDestination(e.target.value)
         setInputField(e.target.value);
-        setPickOrDesti(2)
     }
 
     const handleFindTrip = () => {
         if (pickup && destination) {
-            console.log(("hhahahahahahahah"))
             setGetFare(true)
             setVehiclePanel(true)
             setPanelOpen(false)
@@ -151,7 +187,7 @@ const Home = () => {
 
                     <h4 className='text-2xl font-semibold'>Find a trip</h4>
                     <form onSubmit={(e) => {
-                        submitHandler(e)
+                        e.preventDefault();
                     }}>
                         <div className="line absolute h-16 w-1 top-[45%] left-10 bg-gray-700 rounded-full"></div>
                         <input

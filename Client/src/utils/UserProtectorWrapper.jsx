@@ -1,19 +1,22 @@
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-const UserProtectorWrapper = ({
-    children
-}) => {
+const UserProtectorWrapper = ({ children }) => {
     const navigate = useNavigate();
-    const token = localStorage.getItem('token')
     const id = localStorage.getItem('id')
-    
+    const token = localStorage.getItem('token')
+
     useEffect(() => {
-        if (!token)
+        if (!token) {
             navigate('/login')
-        if(id !== "users")
-            navigate('/captain-home');
-    }, [token, navigate])
+            return
+        }
+        if (id !== "users") {
+            navigate('/captain-home')
+        }
+    }, [token, id])
+
+    if (!token || id !== "users") return null
 
     return (
         <div>

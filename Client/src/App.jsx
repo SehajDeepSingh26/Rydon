@@ -22,7 +22,7 @@ function App() {
         localStorage.clear()
         console.error("Session Timeed Out, Please Login Again !!")
         
-        location.reload(true);
+        // location.reload(true);
     }
 
     return (

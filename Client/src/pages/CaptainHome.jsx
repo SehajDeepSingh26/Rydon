@@ -8,11 +8,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import { DataContext } from '../context/DataContext'
+import { SocketContext } from '../context/SocketContext'
 
 const CaptainHome = () => {
+    const {socket} = useContext(SocketContext)
+    const {captain, setCaptain} = useContext(DataContext)
+
     const [ridePopupPanel, setRidePopupPanel] = useState(true)
     const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false)
-    const {setCaptain} = useContext(DataContext)
 
     const ridePopupPanelRef = useRef(null)
     const confirmRidePopupPanelRef = useRef(null)
@@ -28,10 +31,12 @@ const CaptainHome = () => {
 
             if(profile.data.success){
                 setCaptain(profile.data.data)
-                navigate('/captain-home')
+                console.log(profile.data.data)
             }
-            else 
+            else{ 
                 toast.error(profile.data.message || "Failed to fetch profile data")
+                navigate('/captain-login')
+            }
         } 
         catch (error) {
             console.log(error)
@@ -42,6 +47,10 @@ const CaptainHome = () => {
     useEffect(() => {
         fetchProfile();
     }, [])
+
+    useEffect(() => {
+        socket.emit('join', {userType: "captain", userId: captain._id})
+    }, [captain])
 
 
     useGSAP(function () {

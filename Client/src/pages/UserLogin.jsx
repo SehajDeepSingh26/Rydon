@@ -11,9 +11,9 @@ const UserLogin = () => {
     const id = localStorage.getItem('id')
     
     useEffect(() => {
-        if(id === 'users')
+        if(id && id === 'users')
             navigate('/home')
-        if(id === 'captain')
+        if(id && id === 'captain')
             navigate('/captain-home')
 
     }, [id, navigate])

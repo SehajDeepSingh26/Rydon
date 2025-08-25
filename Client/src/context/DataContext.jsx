@@ -3,7 +3,7 @@ import { createContext, useState } from 'react'
 // eslint-disable-next-line react-refresh/only-export-components
 export const DataContext = createContext()
 
-const UserDataContext = ({ children }) => {
+const UserDataProvider = ({ children }) => {
     const [user, setUser] = useState('')
 
     const [ captain, setCaptain ] = useState('');
@@ -32,4 +32,4 @@ const UserDataContext = ({ children }) => {
     )
 }
 
-export default UserDataContext
+export default UserDataProvider

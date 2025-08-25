@@ -3,7 +3,7 @@ import { createContext, useState } from 'react'
 // eslint-disable-next-line react-refresh/only-export-components
 export const RideContext = createContext()
 
-const UserRideContext = ({ children }) => {
+const UserRideProvider = ({ children }) => {
     const [inputField, setInputField] = useState("")
     const [pickOrDesti, setPickOrDesti] = useState(null) // 1 for pickup and 2 for destination
 
@@ -40,4 +40,4 @@ const UserRideContext = ({ children }) => {
     )
 }
 
-export default UserRideContext
+export default UserRideProvider
