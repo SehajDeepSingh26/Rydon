@@ -56,28 +56,35 @@ const CaptainSignup = () => {
             otp: otp
         }
         // console.log(captainData)
-        setEmail('')
-        setFirstName('')
-        setLastName('')
-        setPassword('')
-        setVehicleColor('')
-        setVehiclePlate('')
-        setVehicleCapacity('')
-        setVehicleType('')
-        setOtp("");
-        setOtpField(false)
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/register`, captainData)
 
-        
-        const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/register`, captainData)
-
-        if (response.data.success === true) {
-            toast.success("Captain account created! Please login.")
-            navigate('/captain-login')
-        }
-        else {
-            toast.error(response.data.message || "Registration failed")
-            setError(response.data.message)
-            return;
+            if (response.data.success === true) {
+                toast.success("Captain account created! Please login.")
+                
+                setEmail('')
+                setFirstName('')
+                setLastName('')
+                setPassword('')
+                setVehicleColor('')
+                setVehiclePlate('')
+                setVehicleCapacity('')
+                setVehicleType('')
+                setOtp("");
+                setOtpField(false)
+                setError("")
+                navigate('/captain-login')
+            }
+            else {
+                toast.error(response.data.message || "Registration failed")
+                setError(response.data.message)
+                
+                return;
+            }
+        } 
+        catch (error) {
+            toast.error(error?.response?.data?.message || error.message || "Registration failed")
+            setError(error?.response?.data?.message || error.message || "Registration failed")
         }
     }
     
@@ -91,7 +98,8 @@ const CaptainSignup = () => {
                 setError(res.data.message)
         }
         catch (error) {
-            console.log(error)
+            toast.error(error?.response?.data?.message || error.message || "Failed to send OTP")
+            setError(error?.response?.data?.message || error.message || "Failed to send OTP")
         }
     }
 

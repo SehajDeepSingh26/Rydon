@@ -31,11 +31,11 @@ const rideSchema = new mongoose.Schema(
         },
 
         duration: {
-            type: Number,
+            type: String,
         }, // in seconds
 
         distance: {
-            type: Number,
+            type: String,
         }, // in meters
 
         paymentID: {

@@ -15,18 +15,37 @@ module.exports.initializeSocket = (server) => {
         console.log(`Client connected: ${socket.id}`);
 
         socket.on('join', async(data) => {      //^ save socketId in dataBase
-            const {userId, userType} = data;
+            try {
+                const {userId, userType} = data;
+                if(userType === 'user')
+                    await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
 
-            if(userType === 'user')
-                await userModel.findByIdAndUpdate(
-                    userId, 
-                    { socketId: socket.id }
-                );
-            else
+                else if(userType === "captain")
+                    await captainModel.findByIdAndUpdate(userId, { socketId: socket.id }); 
+            } 
+            catch (error) {
+                console.log(error)
+                socket.emit('error', {message: "socket not connected"})
+            }
+        })
+
+        socket.on('update-location-captain', async(data) => {
+            try {
+                const {userId, location} = data;
+                if(!location || !location.ltd || !location.lng)
+                    return socket.emit('error', {message: "Invalid location data"})
+
                 await captainModel.findByIdAndUpdate(
-                    userId, 
-                    { socketId: socket.id }
-                );            
+                    userId, {
+                    location: {
+                        ltd: location.ltd,
+                        lng: location.lng
+                    }
+                })
+            } 
+            catch (error) {
+                socket.emit('error', {message: "Error during captain loction update with socket"})
+            }
         })
 
         socket.on('disconnect', () => {

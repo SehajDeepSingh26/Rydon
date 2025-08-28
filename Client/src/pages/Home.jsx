@@ -71,8 +71,10 @@ const Home = () => {
     }, [])
 
     useEffect(() => {
-        console.log(user)
-        socket.emit('join', {userType: "user", userId: user._id})
+        const connectSocket = async() => {
+            await socket.emit('join', {userType: "user", userId: user._id})
+        }
+        connectSocket();
     }, [user])
 
     const managePickup = (e) => {
@@ -140,7 +142,7 @@ const Home = () => {
             })
         } else {
             gsap.to(confirmRidePanelRef.current, {
-                transform: 'translateY(140%)'
+                transform: 'translateY(120%)'
             })
         }
     }, [confirmRidePanel])

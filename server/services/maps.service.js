@@ -1,4 +1,5 @@
-const axios = require("axios")
+const axios = require("axios");
+const { captainModel } = require("../models/captain.models");
 
 module.exports.getAddressCordinate = async (address) => {
     const apiKey = process.env.MAPS_API
@@ -64,5 +65,25 @@ module.exports.getSuggestions = async (input) => {
     catch (error) {
         console.log(error, "Error while fetching suggestions")
         throw error
+    }
+}
+
+module.exports.getCaptainsInTheRadius = async(ltd, lng, radius) => {
+    try {
+        const response = await captainModel.find({
+            location: {
+                $geoWithin: {
+                    $centerSphere: [ [ltd, lng], radius / 3963.2]
+                }
+            }
+        });
+    
+        if(response)
+            return response;
+        else
+            throw new Error("Unable to fetch list of captains in radius")
+    } 
+    catch (error) {
+        console.log(error)
     }
 }

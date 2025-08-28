@@ -10,11 +10,15 @@ const Logout = () => {
 
     useEffect(() => {
         logout();
-    })
+    }, [])
+
     const logout = async () => {
-        if(!id || !token)
+        if(!id || !token){
+            localStorage.clear()
             return;
+        }
         try {
+            console.log("LOGOUT !!!!!")
             const res = await apiConnector(
                 'GET', 
                 `${import.meta.env.VITE_BASE_URL}/${id}/logout`,
@@ -23,8 +27,7 @@ const Logout = () => {
             )
             if(res.data.success){
                 toast.success("Logged out successfully!")
-                localStorage.removeItem('token')
-                localStorage.removeItem('id')
+                localStorage.clear()
                 if(id === "users")
                     navigate('/login')
                 else

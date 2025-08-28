@@ -46,9 +46,7 @@ function App() {
                     </CaptainProtector>
                 } />
                 <Route path='/logout' element={
-                    <UserProtectorWrapper>
-                        <Logout />
-                    </UserProtectorWrapper>
+                    <Logout />
                 } />
                 <Route path='/riding' element={
                     <UserProtectorWrapper>

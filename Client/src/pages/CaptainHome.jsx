@@ -1,5 +1,5 @@
 import { useGSAP } from '@gsap/react'
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import ConfirmRidePopUp from '../components/ConfirmRidePopup'
 import RidePopUp from '../components/RidePopup'
@@ -9,10 +9,12 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import { DataContext } from '../context/DataContext'
 import { SocketContext } from '../context/SocketContext'
+import { RideContext } from '../context/RideContext'
 
 const CaptainHome = () => {
     const {socket} = useContext(SocketContext)
     const {captain, setCaptain} = useContext(DataContext)
+    const {setNewRide} = useContext(RideContext)
 
     const [ridePopupPanel, setRidePopupPanel] = useState(true)
     const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false)
@@ -29,10 +31,8 @@ const CaptainHome = () => {
                 headers: { Authorization: `Bearer ${token}`}
             })
 
-            if(profile.data.success){
+            if(profile.data.success)
                 setCaptain(profile.data.data)
-                console.log(profile.data.data)
-            }
             else{ 
                 toast.error(profile.data.message || "Failed to fetch profile data")
                 navigate('/captain-login')
@@ -49,8 +49,41 @@ const CaptainHome = () => {
     }, [])
 
     useEffect(() => {
-        socket.emit('join', {userType: "captain", userId: captain._id})
-    }, [captain])
+        const connectSocket = async() => {
+            await socket.emit('join', {userType: "captain", userId: captain._id})
+
+            const updateLocation = () => {
+                if(navigator.geolocation){
+                    navigator.geolocation.getCurrentPosition(async(position) => {
+                        await socket.emit('update-location-captain', {
+                            userId: captain._id,
+                            location: {
+                                lng: position.coords.longitude,
+                                ltd: position.coords.latitude
+                            }
+                        })
+                    })
+                }
+            }
+
+            setInterval(() => {
+                updateLocation()
+            }, 1000);
+        }
+        connectSocket();
+    }, [captain._id, socket])
+
+    useEffect(() => {
+        const handleMessage = (recv) => {
+            setNewRide(recv)
+            console.log(recv)
+        };
+        socket.on('message', handleMessage);
+
+        return () => {
+            socket.off('message', handleMessage);
+        };
+    }, [socket])
 
 
     useGSAP(function () {

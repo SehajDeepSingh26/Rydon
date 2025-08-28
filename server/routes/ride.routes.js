@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const { authUser } = require("../middleware/auth.middleware");
-const { creatRide, getFare } = require("../controller/ride.controller");
+const { getFare, createRide } = require("../controller/ride.controller");
 
 router.post(
     '/create',
@@ -17,7 +17,7 @@ router.post(
         .isIn(['auto', 'car', 'moto'])
         .withMessage('Vehicle type must be one of: auto, car, moto'),
     authUser,
-    creatRide
+    createRide
 );
 
 router.get('/get-fare', authUser, getFare)
