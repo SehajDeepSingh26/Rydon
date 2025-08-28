@@ -56,21 +56,25 @@ const captainSchema = new mongoose.Schema({
         }
     },
     location: {
-        ltd:{
-            type: Number
+        type: {
+            type: String,
+            enum: ['Point'], 
         },
-        lng:{
-            type: Number
+        coordinates: {
+            type: [Number],
         }
     }
 })
 
-captainSchema.methods.generateAuthToken = function(){
-    const token = jwt.sign({id: this._id}, process.env.JWT_SECRET, {expiresIn: '24h'})
+
+captainSchema.index({ location: "2dsphere" });
+
+captainSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, { expiresIn: '24h' })
     return token
 }
 
-captainSchema.methods.comparePswd = async function(pass){
+captainSchema.methods.comparePswd = async function (pass) {
     return await bcrypt.compare(pass, this.password);
 }
 

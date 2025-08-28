@@ -1,8 +1,23 @@
 import React, { useContext } from "react";
 import { RideContext } from "../context/RideContext";
+import { SocketContext } from "../context/SocketContext";
+import { useEffect } from "react";
+import toast from "react-hot-toast";
 
 const LookingForDriver = (props) => {
     const { pickup, destination, vehicleType, fares } = useContext(RideContext);
+    const {socket} = useContext(SocketContext)
+
+    useEffect(() => {
+        console.log("check checkl check")
+        const handleStartRide = () => {
+            toast.success("Ride accepted by the Captain !")
+        }
+        socket.on('ride-accepted', handleStartRide)
+        return () => {
+            socket.off('ride-accepted', handleStartRide)
+        }
+    }, [socket])
 
     // Vehicle images map
     const vehicleImages = {

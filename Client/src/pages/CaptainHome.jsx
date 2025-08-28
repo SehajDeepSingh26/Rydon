@@ -66,9 +66,9 @@ const CaptainHome = () => {
                 }
             }
 
-            setInterval(() => {
-                updateLocation()
-            }, 1000);
+            // setInterval(() => {
+            //     updateLocation()
+            // }, 1000);
         }
         connectSocket();
     }, [captain._id, socket])
@@ -76,12 +76,11 @@ const CaptainHome = () => {
     useEffect(() => {
         const handleMessage = (recv) => {
             setNewRide(recv)
-            console.log(recv)
         };
-        socket.on('message', handleMessage);
+        socket.on('new-ride', handleMessage);
 
         return () => {
-            socket.off('message', handleMessage);
+            socket.off('new-ride', handleMessage);
         };
     }, [socket])
 

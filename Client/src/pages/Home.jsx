@@ -142,7 +142,7 @@ const Home = () => {
             })
         } else {
             gsap.to(confirmRidePanelRef.current, {
-                transform: 'translateY(120%)'
+                transform: 'translateY(140%)'
             })
         }
     }, [confirmRidePanel])
