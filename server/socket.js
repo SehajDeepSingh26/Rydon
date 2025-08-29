@@ -50,11 +50,6 @@ module.exports.initializeSocket = (server) => {
             }
         })
 
-        socket.on('ride-accepted', ({userId, message}) => {
-            io.to(userId).emit(message.event, message.data)
-            console.log(userId, message)
-        })
-
         socket.on('disconnect', () => {
             console.log(`Client disconnected: ${socket.id}`)
         })

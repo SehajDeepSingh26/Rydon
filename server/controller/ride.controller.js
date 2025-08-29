@@ -47,10 +47,10 @@ module.exports.createRide = async (req, res, next) => {
         const nearBy_captains = await getCaptainsInTheRadius(pickupCord.ltd, pickupCord.lng, 50)
 
         // populate user
-        const rideWithUser = await rideModel.findById({_id: ride._id}).populate('user')
+        const rideWithUser = await rideModel.findById({ _id: ride._id }).populate('user')
 
         nearBy_captains.map(captain => {
-            if (vehicleType === captain.vehicle.vehicleType){
+            if (vehicleType === captain.vehicle.vehicleType) {
                 sendMessageToSocketId(captain.socketId, {
                     event: 'new-ride',
                     data: rideWithUser
@@ -73,17 +73,17 @@ module.exports.createRide = async (req, res, next) => {
     }
 }
 
-module.exports.confirmRide = async(req, res) => {
-    const {ride, captain} = req.body;
+module.exports.confirmRide = async (req, res) => {
+    const { ride, captain } = req.body;
 
     try {
         const response = await rideModel.findByIdAndUpdate(ride._id, {
             captain: captain,
             status: 'accepted'
-        }, {new: true}).populate('user')
+        }, { new: true }).populate('user')
         console.log(response)
 
-        if(!response){
+        if (!response) {
             throw new Error("Couldn't update Ride status")
         }
 
@@ -101,6 +101,32 @@ module.exports.confirmRide = async(req, res) => {
             success: false,
             message: "Couldn't confirm ride",
             error: error.message
+        })
+    }
+}
+
+module.exports.fetchRideDetails = async (req, res) => {
+    const { rideId } = req.body;
+
+    try {
+        const response = await rideModel.findById(rideId)
+                                        .populate('captain')
+                                        .populate('user')
+                                        .select('otp')
+
+        if (!response)
+            throw new Error("Ride not found")
+
+        console.log(response)
+        res.status(200).json({
+            success: true,
+            ride: response
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success: false,
+            message: error.message
         })
     }
 }

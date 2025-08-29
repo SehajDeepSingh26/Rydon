@@ -8,7 +8,6 @@ import { SocketContext } from "../context/SocketContext"
 const RidePopUp = (props) => {
     const { newRide } = useContext(RideContext) 
     const { captain} = useContext(DataContext)
-    const { socket} = useContext(SocketContext)
     const token = localStorage.getItem('token')
 
     const confirmThisRide = async() => {

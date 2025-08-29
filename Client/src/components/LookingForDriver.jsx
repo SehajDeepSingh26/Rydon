@@ -3,21 +3,44 @@ import { RideContext } from "../context/RideContext";
 import { SocketContext } from "../context/SocketContext";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import axios from "axios";
 
 const LookingForDriver = (props) => {
-    const { pickup, destination, vehicleType, fares } = useContext(RideContext);
-    const {socket} = useContext(SocketContext)
+    const { pickup, destination, vehicleType, fares, newRide, setNewRide } = useContext(RideContext);
+    const { socket } = useContext(SocketContext)
+    const token = localStorage.getItem('token')
 
     useEffect(() => {
-        console.log("check checkl check")
-        const handleStartRide = () => {
-            toast.success("Ride accepted by the Captain !")
-        }
-        socket.on('ride-accepted', handleStartRide)
+        if (!socket || !newRide) return;
+
+        const handleRideAccepted = async () => {
+            toast.success("Ride accepted by the Captain !");
+            try {
+                const response = await axios.post(
+                    `${import.meta.env.VITE_BASE_URL}/rides/fetch-ride`,
+                    { rideId:  newRide._id},
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                if (!response.data.success)
+                    throw new Error("Unable to confirm Ride")
+
+                setNewRide(response.data.ride)
+                props.setVehicleFound(false)
+                props.setWaitingForDriver(true)
+            }
+            catch (error) {
+                toast.error(error.message)
+                console.log(error)
+            }
+        };
+
+        socket.on("ride-accepted", handleRideAccepted);
+
         return () => {
-            socket.off('ride-accepted', handleStartRide)
-        }
-    }, [socket])
+            socket.off("ride-accepted", handleRideAccepted);
+        };
+    }, [socket]);
+
 
     // Vehicle images map
     const vehicleImages = {

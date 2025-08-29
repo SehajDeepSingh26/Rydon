@@ -166,7 +166,7 @@ const Home = () => {
             })
         } else {
             gsap.to(waitingForDriverRef.current, {
-                transform: 'translateY(100%)'
+                transform: 'translateY(140%)'
             })
         }
     }, [waitingForDriver])

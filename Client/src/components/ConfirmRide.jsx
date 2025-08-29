@@ -11,6 +11,7 @@ const ConfirmRide = (props) => {
         fares,
         isLoading,
         setIsLoading,
+        setNewRide
     } = useContext(RideContext);
 
     const token = localStorage.getItem('token');
@@ -28,6 +29,7 @@ const ConfirmRide = (props) => {
                 throw new Error("Failed to confirm ride");
 
             console.log("Ride created:", response.data);
+            setNewRide(response.data.ride);
 
             props.setVehicleFound(true);
             props.setConfirmRidePanel(false);
