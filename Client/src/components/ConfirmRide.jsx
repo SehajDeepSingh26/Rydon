@@ -10,12 +10,13 @@ const ConfirmRide = (props) => {
         vehicleType,
         fares,
         isLoading,
-        setIsLoading
+        setIsLoading,
+        setNewRide
     } = useContext(RideContext);
 
     const token = localStorage.getItem('token');
 
-    const confirmThisRide = async () => {
+    const createRide = async () => {
         try {
             setIsLoading(true);
             const response = await axios.post(
@@ -27,7 +28,8 @@ const ConfirmRide = (props) => {
             if (response.data.success !== true)
                 throw new Error("Failed to confirm ride");
 
-            console.log("Ride confirmed:", response.data);
+            console.log("Ride created:", response.data);
+            setNewRide(response.data.ride);
 
             props.setVehicleFound(true);
             props.setConfirmRidePanel(false);
@@ -88,7 +90,7 @@ const ConfirmRide = (props) => {
                 </div>
 
                 <button
-                    onClick={confirmThisRide}
+                    onClick={createRide}
                     disabled={isLoading}
                     className={`w-full mt-5 font-semibold p-2 rounded-lg text-white ${isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
                         }`}

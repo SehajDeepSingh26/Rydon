@@ -1,4 +1,4 @@
-import { createContext, useState } from 'react'
+import { createContext, useEffect, useState } from 'react'
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const RideContext = createContext()
@@ -14,8 +14,10 @@ const UserRideProvider = ({ children }) => {
 
     const [ isLoading, setIsLoading ] = useState(false);
     const [ getFare, setGetFare ] = useState(false);
+    const [ passenger, setPassenger ] = useState(false);
 
     const [newRide, setNewRide] = useState(null)
+
 
     const value = {
         inputField,
@@ -36,6 +38,8 @@ const UserRideProvider = ({ children }) => {
         setGetFare,
         newRide,
         setNewRide,
+        passenger,
+        setPassenger
     };
     return (
         <RideContext.Provider value={value}>

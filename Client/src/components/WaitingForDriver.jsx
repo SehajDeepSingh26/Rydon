@@ -1,45 +1,86 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { RideContext } from '../context/RideContext'
 
 const WaitingForDriver = (props) => {
+    const { newRide } = useContext(RideContext)
+
+    if (!newRide) {
+        return null
+    }
+
+    const { captain, otp } = newRide
+    const { fullName, vehicle, phone } = captain || {}
+
     return (
         <div>
-            <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
-                props.setWaitingForDriver(false)
-            }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
+            <h5
+                className="p-1 text-center w-[93%] absolute top-0"
+                onClick={() => props.setWaitingForDriver(false)}
+            >
+                <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
+            </h5>
 
-            <div className='flex items-center justify-between'>
-                <img className='h-12' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="" />
-                <div className='text-right'>
-                    <h2 className='text-lg font-medium'>Sarthak</h2>
-                    <h4 className='text-xl font-semibold -mt-1 -mb-1'>MP04 AB 1234</h4>
-                    <p className='text-sm text-gray-600'>Maruti Suzuki Alto</p>
+            {/* Title */}
+            <h2 className="text-3xl mb-4">WAITING FOR DRIVER</h2>
 
+            {/* Driver & Vehicle Info */}
+            <div className="flex items-center justify-between mb-6">
+                <img
+                    className="h-14"
+                    src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg"
+                    alt="vehicle"
+                />
+                <div className="text-right">
+                    <h2 className="text-xl font-semibold">
+                        {fullName?.firstName} {fullName?.lastName}
+                    </h2>
+                    <h4 className="text-lg font-medium -mt-1 -mb-1">
+                        {vehicle?.plate}
+                    </h4>
+                    <p className="text-base text-gray-600">
+                        {vehicle?.colour} {vehicle?.vehicleType}
+                    </p>
                 </div>
             </div>
 
-            <div className='flex gap-2 justify-between flex-col items-center'>
-                <div className='w-full mt-5'>
-                    <div className='flex items-center gap-5 p-3 border-b-2'>
-                        <i className="ri-map-pin-user-fill"></i>
-                        <div>
-                            <h3 className='text-lg font-medium'>562/11-A</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Kankariya Talab, Bhopal</p>
-                        </div>
+            {/* Captain Details in Place of Pickup/Destination/Fare */}
+            <div className="w-full mt-5">
+                {/* Name */}
+                <div className="flex items-center gap-5 p-3 border-b-2">
+                    <i className="ri-user-3-fill text-lg"></i>
+                    <div>
+                        <h3 className="text-xl font-semibold">
+                            {fullName?.firstName} {fullName?.lastName}
+                        </h3>
+                        <p className="text-sm -mt-1 text-gray-600">Captain Name</p>
                     </div>
-                    <div className='flex items-center gap-5 p-3 border-b-2'>
-                        <i className="text-lg ri-map-pin-2-fill"></i>
-                        <div>
-                            <h3 className='text-lg font-medium'>562/11-A</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Kankariya Talab, Bhopal</p>
-                        </div>
+                </div>
+
+                {/* Phone */}
+                <div className="flex items-center gap-5 p-3 border-b-2">
+                    <i className="ri-phone-fill text-lg"></i>
+                    <div>
+                        <h3 className="text-xl font-semibold">{phone}</h3>
+                        <p className="text-sm -mt-1 text-gray-600">Contact Number</p>
                     </div>
-                    <div className='flex items-center gap-5 p-3'>
-                        <i className="ri-currency-line"></i>
-                        <div>
-                            <h3 className='text-lg font-medium'>₹193.20 </h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Cash Cash</p>
-                        </div>
+                </div>
+
+                {/* Vehicle */}
+                <div className="flex items-center gap-5 p-3">
+                    <i className="ri-car-fill text-lg"></i>
+                    <div>
+                        <h3 className="text-xl font-semibold">{vehicle?.plate}</h3>
+                        <p className="text-sm -mt-1 text-gray-600">
+                            {vehicle?.colour} {vehicle?.vehicleType}
+                        </p>
                     </div>
+                </div>
+            </div>
+
+            {/* OTP */}
+            <div className="flex justify-center items-center mt-6">
+                <div className="bg-gray-200 text-2xl font-bold tracking-widest px-6 py-3 rounded-xl shadow">
+                    OTP: {otp}
                 </div>
             </div>
         </div>

@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
-const { authUser } = require("../middleware/auth.middleware");
-const { getFare, createRide } = require("../controller/ride.controller");
+const { authUser, authCaptain } = require("../middleware/auth.middleware");
+const { getFare, createRide, confirmRide, fetchRideDetails } = require("../controller/ride.controller");
 
 router.post(
     '/create',
@@ -18,6 +18,17 @@ router.post(
         .withMessage('Vehicle type must be one of: auto, car, moto'),
     authUser,
     createRide
+);
+router.post(
+    '/confirm-ride',    
+    authCaptain,
+    confirmRide
+);
+
+router.post(
+    '/fetch-ride',    
+    authUser,
+    fetchRideDetails
 );
 
 router.get('/get-fare', authUser, getFare)

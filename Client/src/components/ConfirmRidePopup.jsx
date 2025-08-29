@@ -1,8 +1,37 @@
-import React, { useState } from 'react'
+import  { useState } from 'react'
 import { Link } from 'react-router-dom'
+import axios from "axios"
+import { DataContext } from "../context/DataContext"
+import toast from "react-hot-toast"
+import { useContext } from 'react'
+import { RideContext } from '../context/RideContext'
 
 const ConfirmRidePopUp = (props) => {
     const [otp, setOtp] = useState('')
+    const { captain } = useContext(DataContext)
+    const { newRide } = useContext(RideContext) 
+    const token = localStorage.getItem('token')
+    
+    const StartRide = async() => {
+        if(otp != newRide.otp){
+            toast.error("Invalid OTP")
+            return;
+        }
+        try {
+            const response = await axios.post(
+                    `${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`,
+                    { ride: newRide, captain },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+    
+            console.log(response)
+            toast.success("Ride accepted")
+        } 
+        catch (error) {
+            toast.error(error.message)
+            console.log(error)
+        }
+    }
 
     const submitHander = (e) => {
         e.preventDetault()
@@ -65,6 +94,7 @@ const ConfirmRidePopUp = (props) => {
                         <Link 
                           to='/captain-riding' 
                           className='w-full mt-5 text-lg flex justify-center bg-green-600 text-white font-semibold p-3 rounded-lg'
+                          onClick={StartRide}
                         >Confirm</Link>
                         <button 
                           onClick={() => {
