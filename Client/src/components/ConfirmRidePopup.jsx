@@ -1,5 +1,5 @@
 import  { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from "axios"
 import { DataContext } from "../context/DataContext"
 import toast from "react-hot-toast"
@@ -8,28 +8,34 @@ import { RideContext } from '../context/RideContext'
 
 const ConfirmRidePopUp = (props) => {
     const [otp, setOtp] = useState('')
-    const { captain } = useContext(DataContext)
     const { newRide } = useContext(RideContext) 
     const token = localStorage.getItem('token')
+
+    const navigate = useNavigate();
+
+    if(!newRide)
+        return null
     
     const StartRide = async() => {
-        if(otp != newRide.otp){
-            toast.error("Invalid OTP")
-            return;
-        }
         try {
             const response = await axios.post(
                     `${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`,
-                    { ride: newRide, captain },
+                    { rideId: newRide._id, otp },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
     
-            console.log(response)
-            toast.success("Ride accepted")
+            if(!response?.data.success){
+                toast.error(response.data.message)
+            }
+            else{
+                toast.success(response?.data.message)
+                navigate('/captain-riding')
+            }
         } 
         catch (error) {
             toast.error(error.message)
             console.log(error)
+            return;
         }
     }
 
@@ -49,9 +55,9 @@ const ConfirmRidePopUp = (props) => {
             <div className='flex items-center justify-between p-3 border-2 border-yellow-400 rounded-lg mt-4'>
                 <div className='flex items-center gap-3 '>
                     <img className='h-12 rounded-full object-cover w-12' src="https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg" alt="" />
-                    <h2 className='text-lg font-medium'>Harshi Pateliya</h2>
+                    <h2 className='text-lg font-medium capitalize'>{newRide?.user.fullName.firstName + " " + newRide?.user.fullName.lastName}</h2>
                 </div>
-                <h5 className='text-lg font-semibold'>2.2 KM</h5>
+                <h5 className='text-lg font-semibold'>{newRide.distance} </h5>
             </div>
 
             <div className='flex gap-2 justify-between flex-col items-center'>
@@ -59,22 +65,20 @@ const ConfirmRidePopUp = (props) => {
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="ri-map-pin-user-fill"></i>
                         <div>
-                            <h3 className='text-lg font-medium'>562/11-A</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Kankariya Talab, Bhopal</p>
+                            <h3 className='text-l font-medium'>{newRide.pickup}</h3>
                         </div>
                     </div>
                     <div className='flex items-center gap-5 p-3 border-b-2'>
                         <i className="text-lg ri-map-pin-2-fill"></i>
                         <div>
-                            <h3 className='text-lg font-medium'>562/11-A</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Kankariya Talab, Bhopal</p>
+                            <h3 className='text-l font-medium'>{newRide.destination}</h3>
                         </div>
                     </div>
                     <div className='flex items-center gap-5 p-3'>
                         <i className="ri-currency-line"></i>
                         <div>
-                            <h3 className='text-lg font-medium'>₹193.20 </h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Cash Cash</p>
+                            <h3 className='text-lg font-medium'>{newRide.fare} </h3>
+                            <p className='text-sm -mt-1 text-gray-600'>Cash </p>
                         </div>
                     </div>
                 </div>
@@ -92,7 +96,6 @@ const ConfirmRidePopUp = (props) => {
                         />
 
                         <Link 
-                          to='/captain-riding' 
                           className='w-full mt-5 text-lg flex justify-center bg-green-600 text-white font-semibold p-3 rounded-lg'
                           onClick={StartRide}
                         >Confirm</Link>

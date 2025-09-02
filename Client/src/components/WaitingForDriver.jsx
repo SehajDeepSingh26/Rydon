@@ -1,12 +1,34 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { RideContext } from '../context/RideContext'
+import { SocketContext } from '../context/SocketContext'
+import toast from 'react-hot-toast'
 
 const WaitingForDriver = (props) => {
     const { newRide } = useContext(RideContext)
+    const {socket} = useContext(SocketContext)
+
+    useEffect(() => {
+        console.log("socket change hua kuch kuch **********************************************")
+        if(!socket)
+            return
+        const handleRideStarted = () => {
+            console.log("======================ride started")
+            toast.success("Ride started, Happy Journey !!")
+            props.setRideStartedPanel(true)
+            props.setWaitingForDriverPanel(false)
+        }
+        socket.on('ride-started', handleRideStarted)
+
+        return () => {
+            socket.off('ride-started', handleRideStarted)
+        }
+    }, [socket])
+
 
     if (!newRide) {
         return null
     }
+
 
     const { captain, otp } = newRide
     const { fullName, vehicle, phone } = captain || {}
@@ -15,7 +37,7 @@ const WaitingForDriver = (props) => {
         <div>
             <h5
                 className="p-1 text-center w-[93%] absolute top-0"
-                onClick={() => props.setWaitingForDriver(false)}
+                onClick={() => props.setWaitingForDriverPanel(false)}
             >
                 <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
             </h5>

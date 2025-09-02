@@ -88,7 +88,7 @@ module.exports.confirmRide = async(rideId, captain) => {
         })
         return true
     } catch (error) {
-        console.log(error, "Error while confirmng Ride")
+        console.log(error, "Error while confirming Ride")
         throw error
     }
 }

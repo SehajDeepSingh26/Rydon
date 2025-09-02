@@ -73,7 +73,7 @@ module.exports.createRide = async (req, res, next) => {
     }
 }
 
-module.exports.confirmRide = async (req, res) => {
+module.exports.acceptRide = async (req, res) => {
     const { ride, captain } = req.body;
 
     try {
@@ -81,7 +81,6 @@ module.exports.confirmRide = async (req, res) => {
             captain: captain,
             status: 'accepted'
         }, { new: true }).populate('user')
-        console.log(response)
 
         if (!response) {
             throw new Error("Couldn't update Ride status")
@@ -110,19 +109,63 @@ module.exports.fetchRideDetails = async (req, res) => {
 
     try {
         const response = await rideModel.findById(rideId)
-                                        .populate('captain')
-                                        .populate('user')
-                                        .select('otp')
+            .populate('captain')
+            .populate('user')
+            .select('otp')
 
         if (!response)
             throw new Error("Ride not found")
 
-        console.log(response)
         res.status(200).json({
             success: true,
             ride: response
         })
     } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+module.exports.confirmRide = async (req, res) => {
+    const { rideId, otp } = req.body;
+
+    if (!rideId || !otp)
+        return res.status(400).json({
+            success: false,
+            message: "No ride or otp found !"
+        })
+
+    try {
+        const existingRide = await rideModel.findById({_id: rideId}).populate('user').select('otp')
+        
+        if(!existingRide)
+            throw new Error('No ride found !')
+
+        if(existingRide.otp !== otp){
+            return res.status(200).json({
+                success: false,
+                message: 'Invalid OTP !!'
+            })
+        }
+
+        await rideModel.findOneAndUpdate({_id: rideId}, {
+            status: 'ongoing'
+        })
+
+        sendMessageToSocketId(existingRide.user.socketId, {
+            event: 'ride-started',
+            data: "Ride Started"
+        })
+
+        res.status(200).json({
+            success: true,
+            message: 'Ride Started, Happy Journey !!'
+        })
+    } 
+    catch (error) {
         console.log(error)
         res.status(500).json({
             success: false,
