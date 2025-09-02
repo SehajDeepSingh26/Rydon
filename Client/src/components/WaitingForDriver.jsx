@@ -2,10 +2,13 @@ import React, { useContext, useEffect } from 'react'
 import { RideContext } from '../context/RideContext'
 import { SocketContext } from '../context/SocketContext'
 import toast from 'react-hot-toast'
+import { useNavigate } from 'react-router-dom'
 
 const WaitingForDriver = (props) => {
     const { newRide } = useContext(RideContext)
     const {socket} = useContext(SocketContext)
+    
+    const navigate = useNavigate();
 
     useEffect(() => {
         console.log("socket change hua kuch kuch **********************************************")
@@ -14,8 +17,11 @@ const WaitingForDriver = (props) => {
         const handleRideStarted = () => {
             console.log("======================ride started")
             toast.success("Ride started, Happy Journey !!")
-            props.setRideStartedPanel(true)
+
+            localStorage.setItem('rideId', newRide._id)
+            
             props.setWaitingForDriverPanel(false)
+            navigate('/riding')
         }
         socket.on('ride-started', handleRideStarted)
 

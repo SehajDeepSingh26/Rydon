@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { body } = require("express-validator");
 const { authUser, authCaptain } = require("../middleware/auth.middleware");
-const { getFare, createRide, fetchRideDetails, acceptRide, confirmRide } = require("../controller/ride.controller");
+const { getFare, createRide, fetchRideDetails, acceptRide, confirmRide, finishRide } = require("../controller/ride.controller");
 
 router.post(
     '/create',
@@ -31,10 +31,17 @@ router.post(
 );
 
 router.post(
+    '/finish-ride',    
+    authCaptain,
+    finishRide
+);
+
+router.post(
     '/fetch-ride',    
     authUser,
     fetchRideDetails
 );
+
 
 router.get('/get-fare', authUser, getFare)
 

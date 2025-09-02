@@ -27,8 +27,9 @@ const LocationSearchPanel = () => {
                     Authorization: `Bearer ${token}`
                 }}
             );
-            if (response.data.success != true)
+            if (!response?.data?.success){
                 throw new Error("Unable to fetch suggestions")
+            }
 
             const data = response.data.suggestions;
             data.map((val) => {
@@ -36,7 +37,7 @@ const LocationSearchPanel = () => {
             })
         }
         catch (error) {
-            toast.error(error)
+            toast.error(error.message)
             console.log(error)
         }
     }
