@@ -1,13 +1,19 @@
-import React, { useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import FinishRide from '../components/FinishRide'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
+import { RideContext } from '../context/RideContext'
+import toast from 'react-hot-toast'
 
 const CaptainRiding = () => {
 
     const [finishRidePanel, setFinishRidePanel] = useState(false)
+    const {newRide} = useContext(RideContext)
     const finishRidePanelRef = useRef(null)
+
+    const rideId = localStorage.getItem('rideId')
+    const navigate = useNavigate();
 
     useGSAP(function () {
         if (finishRidePanel) {
@@ -20,7 +26,17 @@ const CaptainRiding = () => {
             })
         }
     }, [finishRidePanel])
+    
+    useEffect(() => {
+        if (!newRide) {
+            if(!rideId)
+                toast.error("No Ride Ongoing");
+            navigate('/captain-home'); 
+        }
+    }, [newRide, navigate]);
 
+    if (!newRide) 
+        return null;
 
     return (
         <div className='h-screen relative'>
@@ -43,7 +59,7 @@ const CaptainRiding = () => {
                 <h5 className='p-1 text-center w-[90%] absolute top-0' onClick={() => {
 
                 }}><i className="text-3xl text-gray-800 ri-arrow-up-wide-line"></i></h5>
-                <h4 className='text-xl font-semibold'>4 KM away</h4>
+                <h4 className='text-xl font-semibold'>{newRide.distance} away</h4>
                 <button className=' bg-green-600 text-white font-semibold p-3 px-10 rounded-lg'>Complete Ride</button>
             </div>
             <div ref={finishRidePanelRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12'>

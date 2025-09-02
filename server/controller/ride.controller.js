@@ -111,7 +111,9 @@ module.exports.fetchRideDetails = async (req, res) => {
         const response = await rideModel.findById(rideId)
             .populate('captain')
             .populate('user')
-            .select('otp')
+            .select('+otp')
+
+        console.log(response)
 
         if (!response)
             throw new Error("Ride not found")
@@ -145,7 +147,7 @@ module.exports.confirmRide = async (req, res) => {
             throw new Error('No ride found !')
 
         if(existingRide.otp !== otp){
-            return res.status(200).json({
+            return res.status(401).json({
                 success: false,
                 message: 'Invalid OTP !!'
             })
@@ -163,6 +165,43 @@ module.exports.confirmRide = async (req, res) => {
         res.status(200).json({
             success: true,
             message: 'Ride Started, Happy Journey !!'
+        })
+    } 
+    catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success: false,
+            message: error.message
+        })
+    }
+}
+
+module.exports.finishRide = async(req, res) => {
+    const {rideId, captainId} = req.body
+
+    try {
+        if(!rideId || !captainId)
+            throw new Error("No Ride found")
+    
+        let response = await rideModel.findById(rideId);
+
+        if(captainId != response.captain || response.status != 'ongoing')
+            throw new Error("No Ride found !")
+
+        response = await rideModel.findByIdAndUpdate(rideId, {
+            status: "completed"
+        }, {new: true}).populate('user')
+
+        // console.log(response)
+
+        sendMessageToSocketId(response.user.socketId, {
+            event: "ride-finished",
+            data: "Ride finished, We hope you have paid the captain !"
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Ride Completed"
         })
     } 
     catch (error) {

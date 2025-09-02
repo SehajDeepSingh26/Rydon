@@ -28,14 +28,17 @@ const ConfirmRidePopUp = (props) => {
                 toast.error(response.data.message)
             }
             else{
+                localStorage.setItem('rideId', newRide._id)
+
                 toast.success(response?.data.message)
+                props.setRidePopupPanel(false)
+                props.setConfirmRidePopupPanel(false)
                 navigate('/captain-riding')
             }
         } 
         catch (error) {
-            toast.error(error.message)
+            toast.error(error.response.data.message)
             console.log(error)
-            return;
         }
     }
 

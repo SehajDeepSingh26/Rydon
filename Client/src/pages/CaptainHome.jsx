@@ -12,32 +12,59 @@ import { SocketContext } from '../context/SocketContext'
 import { RideContext } from '../context/RideContext'
 
 const CaptainHome = () => {
-    const {socket} = useContext(SocketContext)
-    const {captain, setCaptain} = useContext(DataContext)
-    const {setNewRide} = useContext(RideContext)
+    const { socket } = useContext(SocketContext)
+    const { captain, setCaptain } = useContext(DataContext)
+    const { setNewRide } = useContext(RideContext)
 
     const [ridePopupPanel, setRidePopupPanel] = useState(true)
     const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false)
 
     const ridePopupPanelRef = useRef(null)
     const confirmRidePopupPanelRef = useRef(null)
+
     const token = localStorage.getItem('token')
+    const rideId = localStorage.getItem('rideId')
 
     const navigate = useNavigate();
 
-    const fetchProfile = async() => {
+    useEffect(() => {
+        const fillRideDetails = async () => {
+            try {
+                 const response = await axios.post(
+                    `${import.meta.env.VITE_BASE_URL}/rides/fetch-ride`,
+                    { rideId },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                if(!response.data.success)
+                    return;
+
+                setNewRide(response.data.ride)
+
+                if(response.data.ride.status === 'ongoing')
+                    navigate('/captain-riding')
+            } 
+            catch (error) {
+                console.log(error)
+                localStorage.removeItem('rideId')
+            }
+        }
+        if (rideId)
+            fillRideDetails()
+    }, [])
+
+    const fetchProfile = async () => {
         try {
             const profile = await axios.get(`${import.meta.env.VITE_BASE_URL}/captain/profile`, {
-                headers: { Authorization: `Bearer ${token}`}
+                headers: { Authorization: `Bearer ${token}` }
             })
 
-            if(profile.data.success)
+            if (profile.data.success)
                 setCaptain(profile.data.data)
-            else{ 
+            else {
                 toast.error(profile.data.message || "Failed to fetch profile data")
                 navigate('/captain-login')
             }
-        } 
+        }
         catch (error) {
             console.log(error)
             toast.error("Something went wrong")
@@ -49,12 +76,12 @@ const CaptainHome = () => {
     }, [])
 
     useEffect(() => {
-        const connectSocket = async() => {
-            await socket.emit('join', {userType: "captain", userId: captain._id})
+        const connectSocket = async () => {
+            await socket.emit('join', { userType: "captain", userId: captain._id })
 
             const updateLocation = () => {
-                if(navigator.geolocation){
-                    navigator.geolocation.getCurrentPosition(async(position) => {
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(async (position) => {
                         await socket.emit('update-location-captain', {
                             userId: captain._id,
                             location: {
@@ -128,7 +155,7 @@ const CaptainHome = () => {
             <div ref={ridePopupPanelRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12'>
                 <RidePopUp setRidePopupPanel={setRidePopupPanel} setConfirmRidePopupPanel={setConfirmRidePopupPanel} />
             </div>
-            
+
             <div ref={confirmRidePopupPanelRef} className='fixed w-full h-screen z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12'>
                 <ConfirmRidePopUp setConfirmRidePopupPanel={setConfirmRidePopupPanel} setRidePopupPanel={setRidePopupPanel} />
             </div>

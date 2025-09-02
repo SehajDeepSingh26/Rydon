@@ -15,17 +15,17 @@ import { useEffect } from 'react';
 import { DataContext } from '../context/DataContext';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios"
-import StartedRideUser from '../components/StartedRideUser';
 
 const Home = () => {
     const token = localStorage.getItem('token')
+    const rideId = localStorage.getItem('rideId')
 
     const {
         setInputField,
         setPickOrDesti,
         pickup, setPickup,
         destination, setDestination,
-        setGetFare
+        setGetFare, setNewRide
     } = useContext(RideContext)
 
     const { user, setUser } = useContext(DataContext)
@@ -41,12 +41,11 @@ const Home = () => {
     const waitingForDriverRef = useRef(null)
 
     const [panelOpen, setPanelOpen] = useState(false);
-    const [searchPanel, setSearchPanel] = useState(true);
+    const {searchPanel} = useContext(RideContext)
     const [vehiclePanel, setVehiclePanel] = useState(false)
     const [confirmRidePanel, setConfirmRidePanel] = useState(false)
     const [LookingForDriverPanel, setLookingForDriverPanel] = useState(false)
     const [waitingForDriverPanel, setWaitingForDriverPanel] = useState(false)
-    const [rideStartedPanel, setRideStartedPanel] = useState(false)
 
     const navigate = useNavigate()
 
@@ -69,8 +68,33 @@ const Home = () => {
         }
     }
 
+    const fillRideDetails = async () => {
+            try {
+                 const response = await axios.post(
+                    `${import.meta.env.VITE_BASE_URL}/rides/fetch-ride`,
+                    { rideId },
+                    { headers: { Authorization: `Bearer ${token}` } }
+                );
+                if(!response.data.success)
+                    return;
+
+                setNewRide(response.data.ride)
+
+                if(response.data.ride.status === 'ongoing')
+                    navigate('/riding')
+            } 
+            catch (error) {
+                console.log(error)
+                localStorage.removeItem('rideId')
+            }
+        }
+
+
     useEffect(() => {
         fetchProfile();
+        if (rideId)
+            fillRideDetails()
+
     }, [])
 
     useEffect(() => {
@@ -83,7 +107,10 @@ const Home = () => {
     const managePickup = (e) => {
         setGetFare(false)
         setPickOrDesti(1);
+        console.log(e.target.value)
         setPickup(e.target.value)
+        if(e.target.value > 20)
+            setPickup("")
         setInputField(e.target.value);
     }
     const manageDestination = (e) => {
@@ -260,17 +287,10 @@ const Home = () => {
             <div ref={waitingForDriverRef} className='fixed w-full z-10 bottom-0  bg-white px-3 py-6 pt-12'>
                 {
                     waitingForDriverPanel && (
-                        <WaitingForDriver setWaitingForDriverPanel={setWaitingForDriverPanel} setRideStartedPanel={setRideStartedPanel} />
+                        <WaitingForDriver setWaitingForDriverPanel={setWaitingForDriverPanel}  />
                     )
                 }
             </div>
-            {
-                rideStartedPanel && (
-                    <div className='fixed w-full z-10 bottom-0  bg-red text-black px-3 py-6 pt-12'>
-                        <StartedRideUser setSearchPanel={setSearchPanel} />
-                    </div>
-                )
-            }
         </div>
     )
 }

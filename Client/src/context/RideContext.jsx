@@ -18,6 +18,8 @@ const UserRideProvider = ({ children }) => {
 
     const [newRide, setNewRide] = useState(null)
 
+    const [searchPanel, setSearchPanel] = useState(true);
+
 
     const value = {
         inputField,
@@ -39,7 +41,9 @@ const UserRideProvider = ({ children }) => {
         newRide,
         setNewRide,
         passenger,
-        setPassenger
+        setPassenger,
+        searchPanel,
+        setSearchPanel
     };
     return (
         <RideContext.Provider value={value}>
