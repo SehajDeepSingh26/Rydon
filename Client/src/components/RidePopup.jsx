@@ -10,10 +10,10 @@ const RidePopUp = (props) => {
     const { captain} = useContext(DataContext)
     const token = localStorage.getItem('token')
 
-    const confirmThisRide = async() => {
+    const acceptThisRide = async() => {
         try {
             const response = await axios.post(
-                `${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`,
+                `${import.meta.env.VITE_BASE_URL}/rides/accept-ride`,
                 { ride: newRide, captain },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -26,6 +26,7 @@ const RidePopUp = (props) => {
         catch (error) {
             toast.error(error.message)
             console.log(error)
+            return;
         }
     }
 
@@ -86,7 +87,7 @@ const RidePopUp = (props) => {
                 <div className="mt-5 w-full">
                     <button
                         onClick={() => {
-                            confirmThisRide();
+                            acceptThisRide();
                             props.setConfirmRidePopupPanel(true)
                         }}
                         className=" bg-green-600 w-full text-white font-semibold p-2 px-10 rounded-lg"

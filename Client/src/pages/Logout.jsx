@@ -35,7 +35,6 @@ const Logout = () => {
             }
             else{
                 toast.error(res.data.message || "Logout failed")
-                console.log(res.data.message)
                 if(id === "users")
                     navigate('/login')
                 else

@@ -28,10 +28,9 @@ const ConfirmRide = (props) => {
             if (response.data.success !== true)
                 throw new Error("Failed to confirm ride");
 
-            console.log("Ride created:", response.data);
             setNewRide(response.data.ride);
 
-            props.setVehicleFound(true);
+            props.setLookingForDriverPanel(true);
             props.setConfirmRidePanel(false);
 
         } catch (error) {
