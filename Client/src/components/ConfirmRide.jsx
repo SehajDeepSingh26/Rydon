@@ -9,7 +9,6 @@ const ConfirmRide = (props) => {
         destination,
         vehicleType,
         fares,
-        isLoading,
         setIsLoading,
         setNewRide
     } = useContext(RideContext);
@@ -42,63 +41,115 @@ const ConfirmRide = (props) => {
     };
 
     // Vehicle images map
-    const vehicleImages = {
-        car: "https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg",
-        moto: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_638,w_956/v1649231091/assets/2c/7fa194-c954-49b2-9c6d-a3b8601370f5/original/Uber_Moto_Orange_312x208_pixels_Mobile.png",
-        auto: "https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png"
-    };
+    const getVehicleIcon = (type) => {
+        switch (type) {
+            case "car":
+                return "ri-car-line"
+            case "moto":
+                return "ri-motorbike-line"
+            case "auto":
+                return "ri-taxi-line"
+            default:
+                return "ri-car-line"
+        }
+    }
+
+    const getVehicleName = (type) => {
+        switch (type) {
+            case "car":
+                return "RydonGo"
+            case "moto":
+                return "RydonMoto"
+            case "auto":
+                return "RydonAuto"
+            default:
+                return "RydonGo"
+        }
+    }
 
     return (
         <div>
-            <h5
-                className="p-1 text-center w-[93%] absolute top-0"
+            <button
+                className="p-2 text-center w-full absolute -top-4 left-0 right-0"
                 onClick={() => props.setConfirmRidePanel(false)}
             >
-                <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
-            </h5>
+                <div className="w-12 h-1 bg-muted-foreground/50 rounded-full mx-auto"></div>
+            </button>
 
-            <h3 className="text-2xl font-semibold mb-5">Confirm your Ride</h3>
+            <div className="mb-6">
+                <h3 className="text-xl md:text-2xl font-display font-bold text-foreground mb-2">Confirm Your Ride</h3>
+                <p className="text-muted-foreground text-sm md:text-base">Review your trip details before booking</p>
+            </div>
 
-            <div className="flex gap-2 justify-between flex-col items-center">
-                <img className="h-20" src={vehicleImages[vehicleType]} alt={vehicleType} />
-
-                <div className="w-full mt-5">
-                    <div className="flex items-center gap-5 p-3 border-b-2">
-                        <i className="ri-map-pin-user-fill"></i>
+            {/* Selected Vehicle */}
+            <div className="glass-card p-4 rounded-xl mb-6 border border-primary/30">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 md:w-14 md:h-14 bg-primary/20 rounded-xl flex items-center justify-center">
+                            <i className={`${getVehicleIcon(vehicleType)} text-primary text-xl md:text-2xl`}></i>
+                        </div>
                         <div>
-                            <h3 className="text-lg font-medium">{pickup}</h3>
-                            <p className="text-sm -mt-1 text-gray-600">Start Location</p>
+                            <h4 className="font-semibold text-foreground text-base md:text-lg">{getVehicleName(vehicleType)}</h4>
+                            <p className="text-muted-foreground text-sm">2-3 mins away</p>
                         </div>
                     </div>
-                    <div className="flex items-center gap-5 p-3 border-b-2">
-                        <i className="text-lg ri-map-pin-2-fill"></i>
-                        <div>
-                            <h3 className="text-lg font-medium">{destination}</h3>
-                            <p className="text-sm -mt-1 text-gray-600">End Location</p>
-                        </div>
+                    <div className="text-right">
+                        <h2 className="text-lg md:text-xl font-bold text-foreground">₹{fares[vehicleType] || "--"}</h2>
+                        <p className="text-muted-foreground text-xs">Estimated fare</p>
                     </div>
-                    <div className="flex items-center gap-5 p-3">
-                        <i className="ri-currency-line"></i>
-                        <div>
-                            <h3 className="text-lg font-medium">
-                                ₹{fares?.[vehicleType] ?? "--"}
-                            </h3>
-                            <p className="text-sm -mt-1 text-gray-600">Cash</p>
-                        </div>
+                </div>
+            </div>
+
+            {/* Trip Details */}
+            <div className="space-y-3 mb-8">
+                <div className="flex items-start gap-4 p-3 glass-card rounded-xl border border-border">
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mt-1">
+                        <i className="ri-map-pin-user-fill text-primary"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-sm md:text-base">{pickup}</h4>
+                        <p className="text-muted-foreground text-xs md:text-sm">Pickup location</p>
                     </div>
                 </div>
 
+                <div className="flex items-start gap-4 p-3 glass-card rounded-xl border border-border">
+                    <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center mt-1">
+                        <i className="ri-map-pin-2-fill text-secondary"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-sm md:text-base">{destination}</h4>
+                        <p className="text-muted-foreground text-xs md:text-sm">Destination</p>
+                    </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-3 glass-card rounded-xl border border-border">
+                    <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center mt-1">
+                        <i className="ri-currency-line text-accent"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-sm md:text-base">₹{fares[vehicleType] || "--"}</h4>
+                        <p className="text-muted-foreground text-xs md:text-sm">Cash payment</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="space-y-3">
                 <button
                     onClick={createRide}
-                    disabled={isLoading}
-                    className={`w-full mt-5 font-semibold p-2 rounded-lg text-white ${isLoading ? "bg-gray-400 cursor-not-allowed" : "bg-green-600 hover:bg-green-700"
-                        }`}
+                    className="w-full gradient-primary text-primary-foreground font-semibold py-3 md:py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-sm md:text-base"
                 >
-                    {isLoading ? "Confirming..." : "Confirm"}
+                    Confirm Ride
+                </button>
+
+                <button
+                    onClick={() => props.setConfirmRidePanel(false)}
+                    className="w-full bg-muted/20 hover:bg-muted/30 text-foreground font-medium py-3 md:py-4 rounded-xl transition-all duration-200 border border-border text-sm md:text-base"
+                >
+                    Cancel
                 </button>
             </div>
         </div>
-    );
+    )
 };
 
 export default ConfirmRide;

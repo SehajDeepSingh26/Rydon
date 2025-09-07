@@ -3,106 +3,115 @@ import { RideContext } from "../context/RideContext"
 import axios from "axios"
 import { DataContext } from "../context/DataContext"
 import toast from "react-hot-toast"
-import { SocketContext } from "../context/SocketContext"
 
 const RidePopUp = (props) => {
-    const { newRide } = useContext(RideContext) 
-    const { captain} = useContext(DataContext)
-    const token = localStorage.getItem('token')
+    const { newRide } = useContext(RideContext)
+    const { captain } = useContext(DataContext)
+    const token = localStorage.getItem("token")
 
-    const acceptThisRide = async() => {
+    const acceptThisRide = async () => {
+        props.setRidePopupPanel(false)
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_BASE_URL}/rides/accept-ride`,
                 { ride: newRide, captain },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
-            if(!response.data.success)
-                throw new Error("Unable to confirm Ride")
-    
+                { headers: { Authorization: `Bearer ${token}` } },
+            )
+            if (!response.data.success) throw new Error("Unable to confirm Ride")
+
             toast.success("Ride accepted")
-        } 
-        catch (error) {
+        } catch (error) {
             toast.error(error.message)
             console.log(error)
-            return;
+            return
         }
     }
 
-    if (!newRide) return null 
+    if (!newRide) return null
 
     return (
         <div>
-            <h5
-                className="p-1 text-center w-[93%] absolute top-0"
+            <button
+                className="p-2 text-center w-full absolute -top-4 left-0 right-0"
                 onClick={() => props.setRidePopupPanel(false)}
             >
-                <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
-            </h5>
+                <div className="w-12 h-1 bg-muted-foreground/50 rounded-full mx-auto"></div>
+            </button>
 
-            <h3 className="text-2xl font-semibold mb-5">New Ride Available!</h3>
-
-            <div className="flex items-center  gap-48 p-3 bg-yellow-400 rounded-lg mt-4">
-                <div className="flex items-center gap-3 ">
-                    <img className='h-12 rounded-full object-cover w-12' src="https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg" alt="" />
-                    <p className="text-lg font-semibold capitalize">{newRide.user.fullName.firstName + " " + newRide.user.fullName.lastName}</p>
-                </div>
-                <h5 className="text-lg font-semibold">Distance: {newRide.distance}</h5>
-                <h5 className="text-lg font-semibold">Duration: {newRide.duration}</h5>
+            <div className="mb-6">
+                <h3 className="text-xl md:text-2xl font-display font-bold text-foreground mb-2">New Ride Available!</h3>
+                <p className="text-muted-foreground text-sm md:text-base">A passenger is requesting a ride</p>
             </div>
 
-            {/* Ride Details */}
-            <div className="flex gap-2 justify-between flex-col items-center">
-                <div className="w-full mt-5">
-                    <div className="flex items-center gap-5 p-3 border-b-2">
-                        <i className="ri-map-pin-user-fill"></i>
+            <div className="glass-card p-4 rounded-xl mb-6 border border-primary/30">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                            <i className="ri-user-line text-primary text-xl"></i>
+                        </div>
                         <div>
-                            <h3 className="text-lg font-medium">{newRide.pickup}</h3>
-                            <p className="text-sm -mt-1 text-gray-600">
-                                {newRide.pickupDesc}
-                            </p>
+                            <h4 className="font-semibold text-foreground capitalize text-base md:text-lg">
+                                {newRide.user.fullName.firstName + " " + newRide.user.fullName.lastName}
+                            </h4>
+                            <p className="text-muted-foreground text-sm">Passenger</p>
                         </div>
                     </div>
-
-                    <div className="flex items-center gap-5 p-3 border-b-2">
-                        <i className="text-lg ri-map-pin-2-fill"></i>
-                        <div>
-                            <h3 className="text-lg font-medium">{newRide.destination}</h3>
-                            <p className="text-sm -mt-1 text-gray-600">
-                                {newRide.dropDesc}
-                            </p>
-                        </div>
+                    <div className="text-right">
+                        <p className="text-foreground font-semibold text-sm">{newRide.distance}</p>
+                        <p className="text-muted-foreground text-xs">{newRide.duration}</p>
                     </div>
+                </div>
+            </div>
 
-                    <div className="flex items-center gap-5 p-3">
-                        <i className="ri-currency-line"></i>
-                        <div>
-                            <h3 className="text-lg font-medium">₹{newRide.fare}</h3>
-                            <p className="text-sm -mt-1 text-gray-600">{newRide.paymentMode}</p>
-                        </div>
+            <div className="space-y-4 mb-6">
+                <div className="flex items-start gap-4 p-3 glass-card rounded-xl border border-border">
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mt-1">
+                        <i className="ri-map-pin-user-fill text-primary"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-sm md:text-base">{newRide.pickup}</h4>
+                        <p className="text-muted-foreground text-xs md:text-sm mt-1">{newRide.pickupDesc}</p>
                     </div>
                 </div>
 
-                <div className="mt-5 w-full">
-                    <button
-                        onClick={() => {
-                            acceptThisRide();
-                            props.setConfirmRidePopupPanel(true)
-                        }}
-                        className=" bg-green-600 w-full text-white font-semibold p-2 px-10 rounded-lg"
-                    >
-                        Accept
-                    </button>
-
-                    <button
-                        onClick={() => {
-                            props.setRidePopupPanel(false)
-                        }}
-                        className="mt-2 w-full bg-gray-300 text-gray-700 font-semibold p-2 px-10 rounded-lg"
-                    >
-                        Ignore
-                    </button>
+                <div className="flex items-start gap-4 p-3 glass-card rounded-xl border border-border">
+                    <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center mt-1">
+                        <i className="ri-map-pin-2-fill text-secondary"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-sm md:text-base">{newRide.destination}</h4>
+                        <p className="text-muted-foreground text-xs md:text-sm mt-1">{newRide.dropDesc}</p>
+                    </div>
                 </div>
+
+                <div className="flex items-start gap-4 p-3 glass-card rounded-xl border border-border">
+                    <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center mt-1">
+                        <i className="ri-currency-line text-accent"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-sm md:text-base">₹{newRide.fare}</h4>
+                        <p className="text-muted-foreground text-xs md:text-sm mt-1">{newRide.paymentMode}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="space-y-3">
+                <button
+                    onClick={() => {
+                        acceptThisRide()
+                        props.setConfirmRidePopupPanel(true)
+                    }}
+                    className="w-full gradient-primary text-primary-foreground font-semibold py-3 md:py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-sm md:text-base"
+                >
+                    Accept Ride
+                </button>
+
+                <button
+                    onClick={() => props.setRidePopupPanel(false)}
+                    className="w-full bg-muted/20 hover:bg-muted/30 text-foreground font-medium py-3 md:py-4 rounded-xl transition-all duration-200 border border-border text-sm md:text-base"
+                >
+                    Ignore
+                </button>
             </div>
         </div>
     )

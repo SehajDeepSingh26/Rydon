@@ -7,7 +7,7 @@ import axios from 'axios'
 
 const FinishRide = (props) => {
     const { newRide, setNewRide } = useContext(RideContext)
-    const {captain} = useContext(DataContext)
+    const { captain } = useContext(DataContext)
     const navigate = useNavigate();
 
     const token = localStorage.getItem('token')
@@ -20,24 +20,24 @@ const FinishRide = (props) => {
         )
     }
 
-    const handleFinish = async() => {
+    const handleFinish = async () => {
 
         try {
-             const response = await axios.post(
+            const response = await axios.post(
                 `${import.meta.env.VITE_BASE_URL}/rides/finish-ride`,
                 { captainId: captain._id, rideId: newRide._id },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
 
-            if(!response?.data.success)
+            if (!response?.data.success)
                 throw new Error(response.data.message)
 
             localStorage.removeItem('rideId')
             toast.success(response.data.message)
             setNewRide(null)
-            
+
             navigate('/captain-home')
-        } 
+        }
         catch (error) {
             console.log(error)
             toast.error(error.response.data.message)
@@ -46,65 +46,76 @@ const FinishRide = (props) => {
 
     return (
         <div>
-            <h5
-                className='p-1 text-center w-[93%] absolute top-0'
-                onClick={() => {
-                    props.setFinishRidePanel(false)
-                }}
+            <button
+                className="p-2 text-center w-full absolute -top-4 left-0 right-0"
+                onClick={() => props.setFinishRidePanel(false)}
             >
-                <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
-            </h5>
+                <div className="w-12 h-1 bg-muted-foreground/50 rounded-full mx-auto"></div>
+            </button>
 
-            <h3 className='text-2xl font-semibold mb-5'>Finish this Ride</h3>
-
-            <div className='flex items-center justify-between p-4 border-2 border-yellow-400 rounded-lg mt-4'>
-                <div className='flex items-center gap-3'>
-                    <img
-                        className='h-12 w-12 rounded-full object-cover'
-                        src={"https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg"}
-                        alt="customer"
-                    />
-                    <h2 className='text-lg font-medium capitalize'>
-                        {newRide?.user?.fullName.firstName + " " +  newRide?.user?.fullName.lastName || "Customer Name"}
-                    </h2>
-                </div>
-                <h5 className='text-lg font-semibold'>
-                    {newRide?.distance || "0 km"}
-                </h5>
+            <div className="mb-6">
+                <h3 className="text-xl md:text-2xl font-display font-bold text-foreground mb-2">Finish this Ride</h3>
+                <p className="text-muted-foreground text-sm md:text-base">Complete the trip and collect payment</p>
             </div>
 
-            <div className='flex gap-2 justify-between flex-col items-center'>
-                <div className='w-full mt-5'>
-                    <div className='flex items-center gap-5 p-3 border-b-2'>
-                        <i className="ri-map-pin-user-fill"></i>
+            <div className="glass-card p-4 rounded-xl mb-6 border border-primary/30">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                            <i className="ri-user-line text-primary text-xl"></i>
+                        </div>
                         <div>
-                            <h3 className='text-lg font-medium'>{newRide?.pickup}</h3>
+                            <h4 className="text-lg font-display font-semibold text-foreground capitalize">
+                                {newRide?.user?.fullName.firstName + " " + newRide?.user?.fullName.lastName || "Customer Name"}
+                            </h4>
+                            <p className="text-muted-foreground text-sm">Passenger</p>
                         </div>
                     </div>
-                    <div className='flex items-center gap-5 p-3 border-b-2'>
-                        <i className="text-lg ri-map-pin-2-fill"></i>
-                        <div>
-                            <h3 className='text-lg font-medium'>{newRide?.destination}</h3>
-                        </div>
+                    <div className="text-right">
+                        <p className="text-foreground font-semibold">{newRide?.distance || "0 km"}</p>
+                        <p className="text-muted-foreground text-sm">Distance</p>
                     </div>
-                    <div className='flex items-center gap-5 p-3'>
-                        <i className="ri-currency-line"></i>
-                        <div>
-                            <h3 className='text-lg font-medium'>₹{newRide?.fare || 0}</h3>
-                            <p className='text-sm -mt-1 text-gray-600'>{newRide?.paymentMode || "Cash"}</p>
-                        </div>
+                </div>
+            </div>
+
+            <div className="space-y-3 mb-8">
+                <div className="flex items-start gap-4 p-3 glass-card rounded-xl border border-border">
+                    <div className="w-8 h-8 bg-primary/20 rounded-full flex items-center justify-center mt-1">
+                        <i className="ri-map-pin-user-fill text-primary"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-sm md:text-base">{newRide?.pickup}</h4>
+                        <p className="text-muted-foreground text-xs">Pickup location</p>
                     </div>
                 </div>
 
-                <div className='mt-10 w-full'>
-                    <Link
-                        onClick={handleFinish}
-                        className='w-full mt-5 flex text-lg justify-center bg-green-600 text-white font-semibold p-3 rounded-lg'
-                    >
-                        Finish Ride
-                    </Link>
+                <div className="flex items-start gap-4 p-3 glass-card rounded-xl border border-border">
+                    <div className="w-8 h-8 bg-secondary/20 rounded-full flex items-center justify-center mt-1">
+                        <i className="ri-map-pin-2-fill text-secondary"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-sm md:text-base">{newRide?.destination}</h4>
+                        <p className="text-muted-foreground text-xs">Destination</p>
+                    </div>
+                </div>
+
+                <div className="flex items-start gap-4 p-3 glass-card rounded-xl border border-border">
+                    <div className="w-8 h-8 bg-accent/20 rounded-full flex items-center justify-center mt-1">
+                        <i className="ri-currency-line text-accent"></i>
+                    </div>
+                    <div className="flex-1">
+                        <h4 className="font-medium text-foreground text-sm md:text-base">₹{newRide?.fare || 0}</h4>
+                        <p className="text-muted-foreground text-xs">{newRide?.paymentMode || "Cash"}</p>
+                    </div>
                 </div>
             </div>
+
+            <button
+                onClick={handleFinish}
+                className="w-full gradient-primary text-primary-foreground font-semibold py-3 md:py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-sm md:text-base"
+            >
+                Finish Ride & Collect Payment
+            </button>
         </div>
     )
 }

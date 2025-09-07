@@ -1,4 +1,4 @@
-import  { useState } from 'react'
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from "axios"
 import { DataContext } from "../context/DataContext"
@@ -8,26 +8,26 @@ import { RideContext } from '../context/RideContext'
 
 const ConfirmRidePopUp = (props) => {
     const [otp, setOtp] = useState('')
-    const { newRide } = useContext(RideContext) 
+    const { newRide } = useContext(RideContext)
     const token = localStorage.getItem('token')
 
     const navigate = useNavigate();
 
-    if(!newRide)
+    if (!newRide)
         return null
-    
-    const StartRide = async() => {
+
+    const StartRide = async () => {
         try {
             const response = await axios.post(
-                    `${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`,
-                    { rideId: newRide._id, otp },
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-    
-            if(!response?.data.success){
+                `${import.meta.env.VITE_BASE_URL}/rides/confirm-ride`,
+                { rideId: newRide._id, otp },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (!response?.data.success) {
                 toast.error(response.data.message)
             }
-            else{
+            else {
                 localStorage.setItem('rideId', newRide._id)
 
                 toast.success(response?.data.message)
@@ -35,7 +35,7 @@ const ConfirmRidePopUp = (props) => {
                 props.setConfirmRidePopupPanel(false)
                 navigate('/captain-riding')
             }
-        } 
+        }
         catch (error) {
             toast.error(error.response.data.message)
             console.log(error)
@@ -46,71 +46,65 @@ const ConfirmRidePopUp = (props) => {
         e.preventDetault()
     }
     return (
-        <div>
-            <h5 className='p-1 text-center w-[93%] absolute top-0' 
-              onClick={() => {
-                props.setConfirmRidePopupPanel(false)
-              }} >
-                <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
-            </h5>
+        <div className=''>
+            <button
+                className="p-2 text-center w-full absolute -top-4 left-0 right-0"
+                onClick={() => props.setConfirmRidePopupPanel(false)}
+            >
+                <div className="w-12 h-1 bg-muted-foreground/50 rounded-full mx-auto"></div>
+            </button>
 
-            <h3 className='text-2xl font-semibold mb-5'>Confirm this ride to Start</h3>
-            <div className='flex items-center justify-between p-3 border-2 border-yellow-400 rounded-lg mt-4'>
-                <div className='flex items-center gap-3 '>
-                    <img className='h-12 rounded-full object-cover w-12' src="https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg" alt="" />
-                    <h2 className='text-lg font-medium capitalize'>{newRide?.user.fullName.firstName + " " + newRide?.user.fullName.lastName}</h2>
-                </div>
-                <h5 className='text-lg font-semibold'>{newRide.distance} </h5>
+            <div className="mb-6">
+                <h3 className="text-xl md:text-2xl font-display font-bold text-foreground mb-2">Confirm Ride to Start</h3>
+                <p className="text-muted-foreground text-sm md:text-base">Enter the OTP provided by the passenger</p>
             </div>
 
-            <div className='flex gap-2 justify-between flex-col items-center'>
-                <div className='w-full mt-5'>
-                    <div className='flex items-center gap-5 p-3 border-b-2'>
-                        <i className="ri-map-pin-user-fill"></i>
-                        <div>
-                            <h3 className='text-l font-medium'>{newRide.pickup}</h3>
-                        </div>
+            <div className="glass-card p-4 rounded-xl mb-6 border border-primary/30">
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                        <i className="ri-user-line text-primary text-xl"></i>
                     </div>
-                    <div className='flex items-center gap-5 p-3 border-b-2'>
-                        <i className="text-lg ri-map-pin-2-fill"></i>
-                        <div>
-                            <h3 className='text-l font-medium'>{newRide.destination}</h3>
-                        </div>
-                    </div>
-                    <div className='flex items-center gap-5 p-3'>
-                        <i className="ri-currency-line"></i>
-                        <div>
-                            <h3 className='text-lg font-medium'>{newRide.fare} </h3>
-                            <p className='text-sm -mt-1 text-gray-600'>Cash </p>
-                        </div>
+                    <div className="flex-1">
+                        <h4 className="font-semibold text-foreground capitalize text-base md:text-lg">
+                            {newRide?.user.fullName.firstName + " " + newRide?.user.fullName.lastName}
+                        </h4>
+                        <p className="text-muted-foreground text-sm">{newRide.distance}</p>
                     </div>
                 </div>
+            </div>
 
-                <div className='mt-6 w-full'>
-                    <form onSubmit={(e) => {
-                        submitHander(e)
-                    }}>
-                        <input 
-                          value={otp} 
-                          onChange={(e) => setOtp(e.target.value)} 
-                          type="text" 
-                          className='bg-[#eee] px-6 py-4 font-mono text-lg rounded-lg w-full mt-3' 
-                          placeholder='Enter OTP' 
-                        />
+            <form onSubmit={(e) => submitHander(e)} className="space-y-4">
+                <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">Enter OTP</label>
+                    <input
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        type="text"
+                        className="w-full bg-input border border-border rounded-xl px-4 py-3 md:py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all font-mono text-lg md:text-xl text-center tracking-widest"
+                        placeholder="000000"
+                        maxLength="6"
+                    />
+                </div>
 
-                        <Link 
-                          className='w-full mt-5 text-lg flex justify-center bg-green-600 text-white font-semibold p-3 rounded-lg'
-                          onClick={StartRide}
-                        >Confirm</Link>
-                        <button 
-                          onClick={() => {
+                <div className="space-y-3">
+                    <button
+                        onClick={StartRide}
+                        className="w-full gradient-primary text-primary-foreground font-semibold py-3 md:py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-sm md:text-base"
+                    >
+                        Confirm & Start Ride
+                    </button>
+
+                    <button
+                        onClick={() => {
                             props.setConfirmRidePopupPanel(false)
                             props.setRidePopupPanel(false)
-                        }} 
-                          className='w-full mt-2 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg'>Cancel</button>
-                    </form>
+                        }}
+                        className="w-full bg-destructive/20 hover:bg-destructive/30 text-destructive font-medium py-3 md:py-4 rounded-xl transition-all duration-200 border border-destructive/30 text-sm md:text-base"
+                    >
+                        Cancel
+                    </button>
                 </div>
-            </div>
+            </form>
         </div>
     )
 }

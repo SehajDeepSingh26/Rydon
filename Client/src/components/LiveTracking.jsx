@@ -159,8 +159,11 @@ const LiveTracking = () => {
                 <Marker position={currentPosition} label="ME" />
 
                 {/* Captain marker */}
-                {role === "users" && captainPosition && (
-                    <Marker position={captainPosition} label="CP" />
+                {role === "users" && newRide && (
+                    <Polyline
+                        path={[currentPosition, pickupLocation]}
+                        options={dottedLineOptions}
+                    />
                 )}
 
                 {/* Pickup & Destination markers */}

@@ -11,7 +11,8 @@ const LookingForDriver = (props) => {
     const token = localStorage.getItem('token')
 
     useEffect(() => {
-        if (!socket || !newRide) return;
+        if (!socket || !newRide) 
+            return;
 
         const handleRideAccepted = async () => {
             toast.success("Ride accepted by the Captain !");

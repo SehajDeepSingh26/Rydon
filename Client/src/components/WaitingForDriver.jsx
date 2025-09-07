@@ -1,115 +1,96 @@
-import React, { useContext, useEffect } from 'react'
-import { RideContext } from '../context/RideContext'
-import { SocketContext } from '../context/SocketContext'
-import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
+import { useContext, useEffect } from "react"
+import { RideContext } from "../context/RideContext"
+import { SocketContext } from "../context/SocketContext"
+import { useNavigate } from "react-router-dom"
+import toast from "react-hot-toast"
 
 const WaitingForDriver = (props) => {
-    const { newRide } = useContext(RideContext)
-    const {socket} = useContext(SocketContext)
-    
-    const navigate = useNavigate();
+    const { newRide, setNewRide } = useContext(RideContext)
+    const { socket } = useContext(SocketContext)
+    const navigate = useNavigate()
 
     useEffect(() => {
-        console.log("socket change hua kuch kuch **********************************************")
-        if(!socket)
-            return
-        const handleRideStarted = () => {
-            console.log("======================ride started")
-            toast.success("Ride started, Happy Journey !!")
+        if (!socket || !newRide) return
 
-            localStorage.setItem('rideId', newRide._id)
-            
-            props.setWaitingForDriverPanel(false)
-            navigate('/riding')
+        const handleRideStarted = () => {
+            toast.success("Your ride has started!")
+            localStorage.setItem("rideId", newRide._id)
+            navigate("/riding")
         }
-        socket.on('ride-started', handleRideStarted)
+
+        socket.on("ride-started", handleRideStarted)
 
         return () => {
-            socket.off('ride-started', handleRideStarted)
+            socket.off("ride-started", handleRideStarted)
         }
-    }, [socket])
+    }, [socket, newRide])
 
+    if (!newRide) return null
 
-    if (!newRide) {
-        return null
-    }
-
-
-    const { captain, otp } = newRide
-    const { fullName, vehicle, phone } = captain || {}
+    const { captain } = newRide
+    const { fullName, vehicle } = captain || {}
 
     return (
-        <div>
-            <h5
-                className="p-1 text-center w-[93%] absolute top-0"
-                onClick={() => props.setWaitingForDriverPanel(false)}
-            >
-                <i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
-            </h5>
-
-            {/* Title */}
-            <h2 className="text-3xl mb-4">WAITING FOR DRIVER</h2>
-
-            {/* Driver & Vehicle Info */}
-            <div className="flex items-center justify-between mb-6">
-                <img
-                    className="h-14"
-                    src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg"
-                    alt="vehicle"
-                />
-                <div className="text-right">
-                    <h2 className="text-xl font-semibold">
-                        {fullName?.firstName} {fullName?.lastName}
-                    </h2>
-                    <h4 className="text-lg font-medium -mt-1 -mb-1">
-                        {vehicle?.plate}
-                    </h4>
-                    <p className="text-base text-gray-600">
-                        {vehicle?.colour} {vehicle?.vehicleType}
-                    </p>
+        <div className="relative">
+            <div className="mb-4 text-center">
+                <div className="w-12 md:w-16 md:h-16 bg-green-900 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <i className="ri-car-line text-white text-xl md:text-2xl"></i>
                 </div>
+                <h3 className="text-lg md:text-xl font-display font-bold text-foreground mb-1">Driver Found!</h3>
+                <p className="text-muted-foreground text-xs md:text-sm">Your driver is on the way</p>
             </div>
 
-            {/* Captain Details in Place of Pickup/Destination/Fare */}
-            <div className="w-full mt-5">
-                {/* Name */}
-                <div className="flex items-center gap-5 p-3 border-b-2">
-                    <i className="ri-user-3-fill text-lg"></i>
-                    <div>
-                        <h3 className="text-xl font-semibold">
-                            {fullName?.firstName} {fullName?.lastName}
-                        </h3>
-                        <p className="text-sm -mt-1 text-gray-600">Captain Name</p>
+            {/* Captain Info */}
+            <div className="md:flex w-full justify-between">
+                <div className="md:w-2/3 glass-card p-3 rounded-xl mb-4 border border-primary/30">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 md:w-16 md:h-16 bg-primary/20 rounded-full flex items-center justify-center">
+                                <i className="ri-user-line text-primary text-xl md:text-2xl"></i>
+                            </div>
+                            <div>
+                                <h4 className="font-semibold text-foreground text-base md:text-lg capitalize">
+                                    {fullName?.firstName} {fullName?.lastName}
+                                </h4>
+                                <p className="text-muted-foreground text-sm font-mono">{vehicle?.plate}</p>
+                                <p className="text-muted-foreground text-xs capitalize">
+                                    {vehicle?.colour} {vehicle?.vehicleType}
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                            <div className="w-10 h-10 bg-primary/20 rounded-full flex items-center justify-center">
+                                <i className="ri-phone-line text-primary"></i>
+                            </div>
+                            <div className="w-10 h-10 bg-secondary/20 rounded-full flex items-center justify-center">
+                                <i className="ri-message-3-line text-secondary"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                {/* Phone */}
-                <div className="flex items-center gap-5 p-3 border-b-2">
-                    <i className="ri-phone-fill text-lg"></i>
-                    <div>
-                        <h3 className="text-xl font-semibold">{phone}</h3>
-                        <p className="text-sm -mt-1 text-gray-600">Contact Number</p>
-                    </div>
-                </div>
-
-                {/* Vehicle */}
-                <div className="flex items-center gap-5 p-3">
-                    <i className="ri-car-fill text-lg"></i>
-                    <div>
-                        <h3 className="text-xl font-semibold">{vehicle?.plate}</h3>
-                        <p className="text-sm -mt-1 text-gray-600">
-                            {vehicle?.colour} {vehicle?.vehicleType}
-                        </p>
+                <div className="md:w-1/3 glass-card p-3 rounded-xl mb-4 border border-accent/30 bg-accent/5">
+                    <div className="text-center">
+                        <h5 className="font-semibold text-foreground mb-1 text-sm">Your OTP</h5>
+                        <div className="text-xl md:text-2xl font-mono font-bold text-accent tracking-widest">
+                            {newRide.otp || "0000"}
+                        </div>
+                        <p className="text-muted-foreground text-xs mt-1">Share with driver</p>
                     </div>
                 </div>
             </div>
 
-            {/* OTP */}
-            <div className="flex justify-center items-center mt-6">
-                <div className="bg-gray-200 text-2xl font-bold tracking-widest px-6 py-3 rounded-xl shadow">
-                    OTP: {otp}
-                </div>
+            <div className="text-center">
+                <p className="text-muted-foreground text-s">ETA: 2-3 minutes</p>
+                <button
+                    onClick={() => {
+                        setNewRide(null)
+                        props.setWaitingForDriverPanel(false)
+                    }}
+                    className="text-destructive hover:text-destructive/80 font-medium text-lg transition-colors"
+                >
+                    Cancel Ride
+                </button>
             </div>
         </div>
     )

@@ -1,108 +1,115 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import FinishRide from '../components/FinishRide'
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
-import { RideContext } from '../context/RideContext'
-import toast from 'react-hot-toast'
-import LiveTracking from '../components/LiveTracking'
-import { SocketContext } from '../context/SocketContext'
+import { useContext, useEffect, useRef, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import FinishRide from "../components/FinishRide"
+import { useGSAP } from "@gsap/react"
+import gsap from "gsap"
+import { RideContext } from "../context/RideContext"
+import toast from "react-hot-toast"
+import LiveTracking from "../components/LiveTracking"
+import { SocketContext } from "../context/SocketContext"
+import Header from "../components/Header"
 
 const CaptainRiding = () => {
-
     const [finishRidePanel, setFinishRidePanel] = useState(false)
     const { newRide } = useContext(RideContext)
     const { socket } = useContext(SocketContext)
     const finishRidePanelRef = useRef(null)
 
-    const rideId = localStorage.getItem('rideId')
-    const navigate = useNavigate();
+    const rideId = localStorage.getItem("rideId")
+    const navigate = useNavigate()
 
     useEffect(() => {
-        let intervalId;
+        let intervalId
 
-        const updateLocation = async() => {
+        const updateLocation = async () => {
             if (navigator.geolocation) {
                 console.log("hi")
                 await navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        console.log("socket sending captain cordinates", position.coords);
+                        console.log("socket sending captain cordinates", position.coords)
                         socket.emit("update-captain-ride", {
                             ride: newRide,
                             location: {
                                 lng: position.coords.longitude,
                                 ltd: position.coords.latitude,
                             },
-                        });
+                        })
                     },
                     (error) => {
-                        console.error("Geolocation error:", error);
-                    }
-                );
-
+                        console.error("Geolocation error:", error)
+                    },
+                )
             }
-        };
+        }
 
         if (socket && newRide) {
-            intervalId = setInterval(updateLocation, 1000);
+            intervalId = setInterval(updateLocation, 1000)
         }
 
         return () => {
-            if (intervalId) clearInterval(intervalId);
-        };
+            if (intervalId) clearInterval(intervalId)
+        }
     }, [socket, newRide])
 
-    useGSAP(function () {
+    useGSAP(() => {
         if (finishRidePanel) {
             gsap.to(finishRidePanelRef.current, {
-                transform: 'translateY(0)'
+                transform: "translateY(0)",
             })
         } else {
             gsap.to(finishRidePanelRef.current, {
-                transform: 'translateY(100%)'
+                transform: "translateY(100%)",
             })
         }
     }, [finishRidePanel])
 
     useEffect(() => {
         if (!newRide) {
-            if (!rideId)
-                toast.error("No Ride Ongoing");
-            navigate('/captain-home');
+            if (!rideId) toast.error("No Ride Ongoing")
+            navigate("/captain-home")
         }
-    }, [newRide, rideId, navigate]);
+    }, [newRide, rideId, navigate])
 
-    if (!newRide)
-        return null;
+    if (!newRide) return null
 
     return (
-        <div className='h-screen relative'>
+        <div className="h-screen bg-background relative">
+            {/* <Header /> */}
 
-            <div className='fixed p-6 top-0 flex items-center justify-between w-screen'>
-                <img className='w-16' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
-                <Link to='/captain-home' className=' h-10 w-10 bg-white flex items-center justify-center rounded-full'>
-                    <i className="text-lg font-medium ri-logout-box-r-line"></i>
-                </Link>
-            </div>
-            <div className='h-4/5'>
+            <div className="h-4/5 relative">
+                <div className="absolute inset-0 bg-gradient-to-b from-background/20 to-background/60 "></div>
                 <LiveTracking />
-
             </div>
-            <div className='h-1/5 p-6 flex items-center justify-between relative bg-yellow-400 pt-10'
-                onClick={() => {
-                    setFinishRidePanel(true)
-                }}
+
+            <div
+                className="h-1/5 glass-panel p-4 md:p-6 flex items-center justify-between relative z-20 rounded-t-3xl border-t border-border cursor-pointer hover:bg-primary/5 transition-colors"
+                onClick={() => setFinishRidePanel(true)}
             >
-                <h5 className='p-1 text-center w-[90%] absolute top-0' onClick={() => {
+                <button className="p-2 text-center w-full absolute -top-4 left-0 right-0">
+                    <div className="w-12 h-1 bg-foreground/50 rounded-full mx-auto"></div>
+                </button>
 
-                }}><i className="text-3xl text-gray-800 ri-arrow-up-wide-line"></i></h5>
-                <h4 className='text-xl font-semibold'>{newRide.distance} away</h4>
-                <button className=' bg-green-600 text-white font-semibold p-3 px-10 rounded-lg'>Complete Ride</button>
+                <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
+                        <i className="ri-navigation-line text-primary text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 className="text-lg md:text-xl font-display font-bold text-foreground">{newRide.distance} away</h4>
+                        <p className="text-muted-foreground text-sm">Tap to complete ride</p>
+                    </div>
+                </div>
+
+                <button className="gradient-primary text-primary-foreground font-semibold px-6 py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg text-sm md:text-base">
+                    Complete Ride
+                </button>
             </div>
-            <div ref={finishRidePanelRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12'>
+
+            <div
+                ref={finishRidePanelRef}
+                className="fixed w-full z-30 bottom-0 translate-y-full glass-panel px-4 md:px-6 py-6 md:py-10 pt-8 md:pt-12 rounded-t-3xl border-t border-border"
+            >
                 <FinishRide setFinishRidePanel={setFinishRidePanel} />
             </div>
-
         </div>
     )
 }
