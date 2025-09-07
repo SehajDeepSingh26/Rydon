@@ -1,6 +1,7 @@
 const socketIo = require('socket.io');
 const userModel = require('./models/user.model');
 const { captainModel } = require('./models/captain.models');
+const { sendMessageToSocketId } = require('./socket.js');
 let io;
 
 module.exports.initializeSocket = (server) => {
@@ -47,6 +48,31 @@ module.exports.initializeSocket = (server) => {
             }
             catch (error) {
                 socket.emit('error', { message: "Error during captain loction update with socket" })
+            }
+        })
+        socket.on('update-captain-ride', async (data) => {
+            try {
+                const { ride, location } = data;
+                if (!location || !location.ltd || !location.lng || !ride)
+                    return socket.emit('error', { message: "Invalid location data" })
+
+                await captainModel.findByIdAndUpdate(
+                    ride.captain._id,
+                    {
+                        location: {
+                            type: "Point",
+                            coordinates: [location.lng, location.ltd]
+                        }
+                    }
+                );
+
+                sendMessageToSocketId(ride.user.socketId, {
+                    event: "captain-coordinates",
+                    data: { lng: location.lng, ltd: location.ltd } // Send as object
+                });
+            }
+            catch (error) {
+                socket.emit('error', { message: "Error during captain location update with socket to User in Ride" });
             }
         })
 

@@ -113,8 +113,6 @@ module.exports.fetchRideDetails = async (req, res) => {
             .populate('user')
             .select('+otp')
 
-        console.log(response)
-
         if (!response)
             throw new Error("Ride not found")
 

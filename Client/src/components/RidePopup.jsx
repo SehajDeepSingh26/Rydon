@@ -20,7 +20,6 @@ const RidePopUp = (props) => {
             if(!response.data.success)
                 throw new Error("Unable to confirm Ride")
     
-            console.log(response)
             toast.success("Ride accepted")
         } 
         catch (error) {

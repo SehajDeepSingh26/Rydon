@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { RideContext } from '../context/RideContext'
 import toast from 'react-hot-toast'
 import { SocketContext } from '../context/SocketContext'
+import LiveTracking from '../components/LiveTracking'
 
 const Riding = () => {
     const { newRide, setSearchPanel, setNewRide } = useContext(RideContext)
@@ -29,6 +30,7 @@ const Riding = () => {
             toast.success("Ride Finished, Hope you have paid the captain ;)")
             localStorage.removeItem('rideId')
             setNewRide(null)
+            setSearchPanel(true)
 
             navigate('home')
         }
@@ -46,8 +48,6 @@ const Riding = () => {
     const { captain, pickup, destination, fare } = newRide
     const { fullName, vehicle } = captain || {}
 
-    console.log(newRide)
-
     return (
         <div className='h-screen'>
             {/* Home Button */}
@@ -60,11 +60,7 @@ const Riding = () => {
 
             {/* Ride Animation */}
             <div className='h-5/8'>
-                <img
-                    className='h-full w-full object-cover'
-                    src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-                    alt="ride animation"
-                />
+                <LiveTracking />
             </div>
 
             {/* Ride Details */}

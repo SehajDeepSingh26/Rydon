@@ -15,6 +15,7 @@ import { useEffect } from 'react';
 import { DataContext } from '../context/DataContext';
 import { useNavigate } from 'react-router-dom';
 import axios from "axios"
+import LiveTracking from '../components/LiveTracking';
 
 const Home = () => {
     const token = localStorage.getItem('token')
@@ -107,10 +108,7 @@ const Home = () => {
     const managePickup = (e) => {
         setGetFare(false)
         setPickOrDesti(1);
-        console.log(e.target.value)
         setPickup(e.target.value)
-        if(e.target.value > 20)
-            setPickup("")
         setInputField(e.target.value);
     }
     const manageDestination = (e) => {
@@ -206,8 +204,7 @@ const Home = () => {
         <div className='h-screen relative overflow-hidden'>
             <img className='w-16 absolute left-5 top-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
             <div className='h-screen w-screen'>
-                {/* image for temporary use  */}
-                <img className='h-full w-full object-cover' src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" />
+                <LiveTracking />
             </div>
             {
                 searchPanel && (

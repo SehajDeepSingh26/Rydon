@@ -5,15 +5,52 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { RideContext } from '../context/RideContext'
 import toast from 'react-hot-toast'
+import LiveTracking from '../components/LiveTracking'
+import { SocketContext } from '../context/SocketContext'
 
 const CaptainRiding = () => {
 
     const [finishRidePanel, setFinishRidePanel] = useState(false)
-    const {newRide} = useContext(RideContext)
+    const { newRide } = useContext(RideContext)
+    const { socket } = useContext(SocketContext)
     const finishRidePanelRef = useRef(null)
 
     const rideId = localStorage.getItem('rideId')
     const navigate = useNavigate();
+
+    useEffect(() => {
+        let intervalId;
+
+        const updateLocation = async() => {
+            if (navigator.geolocation) {
+                console.log("hi")
+                await navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        console.log("socket sending captain cordinates", position.coords);
+                        socket.emit("update-captain-ride", {
+                            ride: newRide,
+                            location: {
+                                lng: position.coords.longitude,
+                                ltd: position.coords.latitude,
+                            },
+                        });
+                    },
+                    (error) => {
+                        console.error("Geolocation error:", error);
+                    }
+                );
+
+            }
+        };
+
+        if (socket && newRide) {
+            intervalId = setInterval(updateLocation, 1000);
+        }
+
+        return () => {
+            if (intervalId) clearInterval(intervalId);
+        };
+    }, [socket, newRide])
 
     useGSAP(function () {
         if (finishRidePanel) {
@@ -26,16 +63,16 @@ const CaptainRiding = () => {
             })
         }
     }, [finishRidePanel])
-    
+
     useEffect(() => {
         if (!newRide) {
-            if(!rideId)
+            if (!rideId)
                 toast.error("No Ride Ongoing");
-            navigate('/captain-home'); 
+            navigate('/captain-home');
         }
-    }, [newRide, navigate]);
+    }, [newRide, rideId, navigate]);
 
-    if (!newRide) 
+    if (!newRide)
         return null;
 
     return (
@@ -48,7 +85,7 @@ const CaptainRiding = () => {
                 </Link>
             </div>
             <div className='h-4/5'>
-                <img className='h-full w-full object-cover' src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif" alt="" />
+                <LiveTracking />
 
             </div>
             <div className='h-1/5 p-6 flex items-center justify-between relative bg-yellow-400 pt-10'

@@ -32,7 +32,6 @@ const Captainlogin = () => {
         try {
             const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captain/login`, captain)
             let data;
-            console.log(response)
             if (response?.data?.success === true) {
                 toast.success("Login successful!")
                 data = response.data
@@ -46,7 +45,7 @@ const Captainlogin = () => {
         } 
         catch (error) {
             toast.error(error?.response?.data?.message || error.message || "Login failed")
-            // console.log(error)
+            console.log(error)
         }
 
         setEmail('')
