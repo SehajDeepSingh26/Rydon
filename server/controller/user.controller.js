@@ -42,8 +42,7 @@ module.exports.sendOtp = async (req, res) => {
         await OtpModel.create({email, otp});
         res.status(201).json({
             success: true,
-            message: "Otp sent successfully",
-            Otp: otp
+            message: "Otp sent successfully"
         })
     } 
     catch (error) {

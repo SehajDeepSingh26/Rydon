@@ -16,9 +16,7 @@ const Header = () => {
                         {showLogout && (
                             <button
                                 onClick={() => {
-                                    localStorage.removeItem("token")
-                                    localStorage.removeItem("rideId")
-                                    navigate("/login")
+                                    navigate("/logout")
                                 }}
                                 className="px-3 py-1 text-sm font-medium bg-destructive text-destructive-foreground rounded-lg hover:bg-destructive/90 transition-colors"
                             >
