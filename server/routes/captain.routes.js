@@ -11,7 +11,7 @@ router.post('/register', [
     body('vehicle.colour').notEmpty().withMessage('Vehicle color is required'),
     body('vehicle.plate').notEmpty().withMessage('Vehicle plate is required'),
     body('vehicle.capacity').isInt({ min: 1 }).withMessage('Vehicle capacity must be a positive integer'),
-    body('vehicle.vehicleType').isIn(['car', 'motorbike', 'auto']).withMessage('Vehicle type must be car, motorbike, or auto'),
+    body('vehicle.vehicleType').isIn(['car', 'moto', 'auto']).withMessage('Vehicle type must be car, motorbike, or auto'),
     body('otp').isLength({ min: 6 }).withMessage('OTP must be of length 6'),
 ], registerCaptain)
 

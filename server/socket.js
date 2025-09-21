@@ -1,5 +1,5 @@
 const socketIo = require('socket.io');
-const userModel = require('./models/user.model');
+// const {userModel} = require('./models/user.model');
 const { captainModel } = require('./models/captain.models');
 const { sendMessageToSocketId } = require('./socket.js');
 let io;
@@ -18,8 +18,14 @@ module.exports.initializeSocket = (server) => {
         socket.on('join', async (data) => {      //^ save socketId in dataBase
             try {
                 const { userId, userType } = data;
-                if (userType === 'user')
-                    await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
+                if (userType === 'user'){
+                    
+                    // await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
+                    await pool.query(
+                        'UPDATE users SET socketId = ?',
+                        [socket.id]
+                    )
+                }
 
                 else if (userType === "captain")
                     await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });

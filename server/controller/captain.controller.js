@@ -1,6 +1,6 @@
 const { validationResult } = require("express-validator");
 const { captainModel } = require("../models/captain.models");
-const { blackListModel } = require("../models/blacklistToken.models");
+// const { blackListModel } = require("../models/blacklistToken.models");
 const { createCaptain } = require("../services/captain.service");
 const otpGenerator = require("otp-generator");
 const { OtpModel } = require("../models/otp.model");
@@ -37,10 +37,10 @@ module.exports.sendOTP = async (req, res, next) => {
         }
     
         await OtpModel.create({email, otp});
+        console.log(otp)
         res.status(201).json({
             success: true,
-            message: "OTP sent successfully",
-            OTP: otp
+            message: "OTP sent successfully"
         })
     } 
     catch (error) {
@@ -174,10 +174,14 @@ module.exports.captainProfile = async (req, res, next) => {
 
 module.exports.logoutCaptain = async (req, res) => {
     try {
-        res.clearCookie('token')
         const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+        res.clearCookie('token')
 
-        await blackListModel.create({ token });
+        // await blackListModel.create({ token });
+        await pool.query(
+            `INSERT INTO blacklist_tokens (token) VALUES (?)`,
+            [token]
+        )
         res.status(200).json({
             success: true,
             message: "Captain logged out successfully"

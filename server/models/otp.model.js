@@ -35,3 +35,14 @@ otpSchema.pre("save", async function(next){
 })
 
 module.exports.OtpModel = mongoose.model("OTP", otpSchema);
+
+
+module.exports.createOtpTable = async(pool) => {
+    await pool.query(`
+        CREATE TABLE IF NOT EXISTS otp_codes (
+            email VARCHAR(255) PRIMARY KEY,
+            otp INT NOT NULL,
+            expires_at TIMESTAMP DEFAULT (CURRENT_TIMESTAMP + INTERVAL 5 MINUTE) 
+        )
+    `)
+}

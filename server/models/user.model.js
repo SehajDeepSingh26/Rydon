@@ -30,8 +30,8 @@ const userSchema = new mongoose.Schema({
     },
 })
 
-userSchema.methods.generateAuthToken = function(){
-    const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {expiresIn: '24h'});
+module.exports.generateAuthToken = async(user) => {
+    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {expiresIn: '24h'});
     return token;
 }
 
@@ -39,9 +39,27 @@ userSchema.methods.comparePassword = async function (password) {
     return await bcrypt.compare(password, this.password)
 }
 
-userSchema.statics.hashPassword = async(password) => {
+module.exports.hashPassword = async(password) => {
     return await bcrypt.hash(password, 10);
 }
 
-const userModel = mongoose.model("User", userSchema);
-module.exports = userModel;
+module.exports.userModel = mongoose.model("User", userSchema);
+
+
+module.exports.createUserTable = async(pool) => {
+    try {
+        const [result] = await pool.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                firstName VARCHAR(100) NOT NULL,
+                lastName VARCHAR(100),
+                email VARCHAR(255) UNIQUE NOT NULL,
+                password VARCHAR(255) NOT NULL,
+                socketId VARCHAR(255)
+            )
+        `);
+        // console.log("User tabel created", result)
+    } catch (error) {
+        console.log(error)
+    }
+}

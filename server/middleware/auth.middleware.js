@@ -1,7 +1,8 @@
 
+const { pool } = require("../db/db");
 const { blackListModel } = require("../models/blacklistToken.models");
 const { captainModel } = require("../models/captain.models");
-const userModel = require("../models/user.model");
+// const {userModel} = require("../models/user.model");
 const jwt = require("jsonwebtoken");
 
 module.exports.authUser = async (req, res, next) => {
@@ -11,9 +12,13 @@ module.exports.authUser = async (req, res, next) => {
             success: false,
             message: "Unauthorized"
         })
-
-    const isBlacklisted = await blackListModel.findOne({token})
-    if(isBlacklisted){
+    
+    // const isBlacklisted = await blackListModel.findOne({token})
+    const [isBlacklisted] = await pool.query(
+        'SELECT * FROM blacklist_tokens WHERE token = ?',
+        [token]
+    )
+    if(isBlacklisted.length > 0){
         return res.status(401).json({
             success: false,
             message: "Unauthorized"
@@ -22,9 +27,14 @@ module.exports.authUser = async (req, res, next) => {
 
     try {
         const decodedId = jwt.verify(token, process.env.JWT_SECRET)
-        const user = await userModel.findById(decodedId.id)
+
+        // const user = await userModel.findById(decodedId.id)
+        const [user] = await pool.query(
+            'SELECT * FROM users WHERE id = ?',
+            [decodedId.id]
+        )
         
-        req.user = user;
+        req.user = user[0];
         return next();
     } 
     catch (error) {
@@ -46,11 +56,15 @@ module.exports.authCaptain = async(req, res, next) => {
         })
     }
 
-    const isBlacklisted = await blackListModel.findOne({token})
-    if(isBlacklisted){
-        return res.status(403).json({
+    // const isBlacklisted = await blackListModel.findOne({token})
+    const [isBlacklisted] = await pool.query(
+        'SELECT * FROM blacklist_tokens WHERE token = ?',
+        [token]
+    )
+    if(isBlacklisted.length > 0){
+        return res.status(401).json({
             success: false,
-            message: "UnAuthorized"
+            message: "Unauthorized"
         })
     }
 

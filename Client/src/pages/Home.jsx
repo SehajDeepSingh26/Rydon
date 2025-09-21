@@ -118,7 +118,7 @@ const Home = () => {
     useGSAP(() => {
         if (panelOpen) {
             gsap.to(panelRef.current, {
-                height: "60%",
+                height: "70%",
                 padding: 24,
                 opacity: 1,
             })
@@ -189,15 +189,16 @@ const Home = () => {
         <div className="h-screen relative overflow-hidden bg-background">
             <Header />
 
-            <div className="h-2/3 w-screen">
+            <div className="h-2/3 relative w-screen">
                 <div className=" bg-gradient-to-b from-background/20 to-background/40"></div>
                 <LiveTracking />
             </div>
 
             <div className="h-1/3 z-20">
                 {searchPanel && (
-                    <div className="flex flex-col justify-end h-screen absolute top-0 w-full  30">
-                        <div className="h-[30%] p-4 md:p-6 glass-panel relative rounded-t-3xl border-t border-border">
+                    <div className="flex flex-col justify-end absolute bottom-0 w-full pointer-events-none">
+                        <div className="h-[40%] p-4 md:p-6 glass-panel relative rounded-t-3xl border-t border-border pointer-events-auto">
+
                             <button
                                 ref={panelCloseRef}
                                 onClick={() => setPanelOpen(false)}
@@ -244,16 +245,20 @@ const Home = () => {
                             </form>
 
                             <button
-                                className="w-full mt-4 md:mt-6 gradient-primary text-primary-foreground font-semibold py-3 md:py-4 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-sm md:text-base sticky bottom-0  10"
+                                className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-sm md:text-base"
                                 onClick={handleFindTrip}
                             >
                                 Find Trip
                             </button>
                         </div>
 
-                        <div ref={panelRef} className="glass-panel h-0 overflow-hidden">
-                            <LocationSearchPanel />
-                        </div>
+                        {
+                            panelOpen && (
+                                <div ref={panelRef} className="glass-panel overflow-hidden pointer-events-auto">
+                                    <LocationSearchPanel />
+                                </div>
+                            )
+                        }
                     </div>
                 )}
 

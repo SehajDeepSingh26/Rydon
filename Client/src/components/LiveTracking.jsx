@@ -154,6 +154,8 @@ const LiveTracking = () => {
                 mapContainerStyle={containerStyle}
                 center={currentPosition}
                 zoom={14}
+                draggable: true
+                gestureHandling: greedy
             >
                 {/* Current position */}
                 <Marker position={currentPosition} label="ME" />
