@@ -40,6 +40,7 @@ module.exports.getOtp = () => {
 }
 
 module.exports.createRide = async({ user, pickup, destination, vehicleType}) => {
+    console.log(user)
     if(!user || !pickup || !destination || !vehicleType)
         throw new Error("Missing required fields for creating a Ride")
 

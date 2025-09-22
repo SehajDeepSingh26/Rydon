@@ -118,8 +118,8 @@ const Home = () => {
     useGSAP(() => {
         if (panelOpen) {
             gsap.to(panelRef.current, {
-                height: "70%",
-                padding: 24,
+                height: "60%",
+                padding: 0,
                 opacity: 1,
             })
             gsap.to(panelCloseRef.current, {
@@ -189,16 +189,15 @@ const Home = () => {
         <div className="h-screen relative overflow-hidden bg-background">
             <Header />
 
-            <div className="h-2/3 relative w-screen">
+            <div className="h-2/3 w-screen">
                 <div className=" bg-gradient-to-b from-background/20 to-background/40"></div>
                 <LiveTracking />
             </div>
 
             <div className="h-1/3 z-20">
                 {searchPanel && (
-                    <div className="flex flex-col justify-end absolute bottom-0 w-full pointer-events-none">
-                        <div className="h-[40%] p-4 md:p-6 glass-panel relative rounded-t-3xl border-t border-border pointer-events-auto">
-
+                    <div className="flex flex-col justify-end h-screen absolute top-0 w-full  30">
+                        <div className="h-[30%] p-4 md:p-6 glass-panel relative rounded-t-3xl border-t border-border">
                             <button
                                 ref={panelCloseRef}
                                 onClick={() => setPanelOpen(false)}
@@ -212,16 +211,16 @@ const Home = () => {
                                 <p className="text-muted-foreground text-sm md:text-base">Where would you like to go?</p>
                             </div>
 
-                            <form onSubmit={(e) => e.preventDefault()} className="space-y-3">
+                            <form onSubmit={(e) => e.preventDefault()} className="space-y-2 transform -translate-y-1/5">
                                 <div className="relative">
-                                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                                    <div className="absolute left-4 z-50 top-1/2 ">
                                         <div className="w-3 h-3 bg-primary rounded-full"></div>
                                     </div>
                                     <input
                                         onClick={() => setPanelOpen(true)}
                                         value={pickup}
                                         onChange={(e) => managePickup(e)}
-                                        className="w-full bg-input border border-border rounded-xl pl-12 pr-4 py-3 md:py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-sm md:text-base"
+                                        className="w-full  bg-input border border-border rounded-xl pl-12 pr-4 py-3 md:py-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-sm md:text-base"
                                         type="text"
                                         placeholder="Pickup location"
                                     />
@@ -245,20 +244,16 @@ const Home = () => {
                             </form>
 
                             <button
-                                className="w-full gradient-primary text-primary-foreground font-semibold py-3 rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-sm md:text-base"
+                                className="w-full p-2 gradient-primary text-primary-foreground font-semibold rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg hover:shadow-xl text-sm md:text-base sticky bottom-0 -translate-y-1/2"
                                 onClick={handleFindTrip}
                             >
                                 Find Trip
                             </button>
                         </div>
 
-                        {
-                            panelOpen && (
-                                <div ref={panelRef} className="glass-panel overflow-hidden pointer-events-auto">
-                                    <LocationSearchPanel />
-                                </div>
-                            )
-                        }
+                        <div ref={panelRef} className="glass-panel h-0 overflow-hidden">
+                            <LocationSearchPanel />
+                        </div>
                     </div>
                 )}
 

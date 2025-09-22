@@ -2,6 +2,7 @@ const socketIo = require('socket.io');
 // const {userModel} = require('./models/user.model');
 const { captainModel } = require('./models/captain.models');
 const { sendMessageToSocketId } = require('./socket.js');
+const { pool } = require('./db/db.js');
 let io;
 
 module.exports.initializeSocket = (server) => {

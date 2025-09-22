@@ -41,7 +41,7 @@ const LocationSearchPanel = () => {
   }, [inputField, pickOrDesti])
 
   return (
-    <div className="p-4 md:p-6 space-y-3">
+    <div className="p-4 space-y-2">
       <div className="mb-4">
         <h3 className="text-lg font-display font-semibold text-foreground mb-2">
           {pickOrDesti === 1 ? "Select Pickup Location" : "Select Destination"}
@@ -64,7 +64,7 @@ const LocationSearchPanel = () => {
             if (pickOrDesti === 1) setPickup(elem)
             else setDestination(elem)
           }}
-          className="flex gap-4 glass-card p-4 rounded-xl items-center cursor-pointer hover:bg-muted/20 transition-all duration-200 border border-border hover:border-primary/50"
+          className="flex gap-3 glass-card p-2 rounded-xl items-center cursor-pointer hover:bg-muted/20 transition-all duration-200 border border-border hover:border-primary/50"
         >
           <div className="bg-primary/20 h-10 w-10 flex items-center justify-center rounded-full">
             <i className="ri-map-pin-fill text-primary"></i>

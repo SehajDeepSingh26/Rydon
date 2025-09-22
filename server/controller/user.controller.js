@@ -131,14 +131,19 @@ module.exports.registerUser = async (req, res) => {
         
         const hashedPass = await hashPassword(password);
 
-        const user = await userService.createUser({ fullName, email, password: hashedPass });
+        // const user = await userService.createUser({ fullName, email, password: hashedPass });
 
         await pool.query('INSERT INTO users (firstName, lastName, email, password) VALUES (?, ?, ?, ?)', [fullName.firstName, fullName.lastName, email, hashedPass])
+
+        const user = {
+            fullName,
+            email
+        }
 
         // const token = user.generateAuthToken();
         res.status(201).json({
             // token,
-            user,
+            user: user,
             success: true,
             message: "User registered successfully"
         });
@@ -197,7 +202,7 @@ module.exports.loginUser = async (req, res, next) => {
         }
 
         const token = await generateAuthToken(user[0]);
-        console.log(token)
+        console.log(user[0])
         res.cookie('token', token)
 
         res.status(200).json({

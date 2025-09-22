@@ -41,7 +41,8 @@ module.exports.createRide = async (req, res, next) => {
     const { pickup, destination, vehicleType } = req.body
 
     try {
-        const ride = await createRide({ user: req.user._id, pickup, destination, vehicleType });
+        console.log(req.user)
+        const ride = await createRide({ user: req.user.id, pickup, destination, vehicleType });
         const pickupCord = await getAddressCordinate(pickup);
 
         const nearBy_captains = await getCaptainsInTheRadius(pickupCord.ltd, pickupCord.lng, 50)
